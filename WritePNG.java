@@ -101,12 +101,19 @@ public class WritePNG {
         //  break;
         //}
 
-        File f = new File("HARV_overview.png");
+        File f = new File("HARV_overview.png.tmp");
         try {
           ImageIO.write(out, "PNG", f);
         } catch (java.io.IOException e) {
           throw new RuntimeException("IOException from ImageIO.write", e);
         }
+
+        File f2 = new File("HARV_overview.png");
+        boolean didRenameSucceed = f.renameTo(f2);
+        if (!didRenameSucceed) {
+          throw new RuntimeException("Couldn't rename " + f + " to " + f2);
+        }
+
       } // end if ends with .tif
     } // loop to next file
   }
