@@ -22,10 +22,12 @@ public class WritePNG {
     Pattern pattern = Pattern.compile(
       "2014_HARV_2_([0-9]{3})000_([0-9]{4})000_image.tif");
     File folder = new File("../HARV_L3_Camera");
-    int minLat = Integer.MAX_VALUE;
-    int maxLat = Integer.MIN_VALUE;
-    int minLon = Integer.MAX_VALUE;
-    int maxLon = Integer.MIN_VALUE;
+    // "Nort" means UTM Zone 18N northing (divided by 1000 to change meters to km)
+    // "East" means UTM Zone 18N easting  (divided by 1000 to change meters to km)
+    int minNort = Integer.MAX_VALUE;
+    int maxNort = Integer.MIN_VALUE;
+    int minEast = Integer.MAX_VALUE;
+    int maxEast = Integer.MIN_VALUE;
     for (File file : folder.listFiles()) {
       if (file.getName().endsWith(".tif")) {
         Matcher matcher = pattern.matcher(file.getName());
@@ -33,30 +35,28 @@ public class WritePNG {
           throw new RuntimeException("Filename " + file.getName() +
             " doesn't match pattern " + pattern);
         }
-        int lon = Integer.parseInt(matcher.group(1));
-        int lat = Integer.parseInt(matcher.group(2));
+        int east = Integer.parseInt(matcher.group(1));
+        int nort = Integer.parseInt(matcher.group(2));
 
-        if (lon < minLon) {
-          minLon = lon;
+        if (east < minEast) {
+          minEast = east;
         }
-        if (lon > maxLon) {
-          maxLon = lon;
+        if (east > maxEast) {
+          maxEast = east;
         }
-        if (lat < minLat) {
-          minLat = lat;
+        if (nort < minNort) {
+          minNort = nort;
         }
-        if (lat > maxLat) {
-          maxLat = lat;
+        if (nort > maxNort) {
+          maxNort = nort;
         }
       }
     }
-    System.out.println(minLon + " " + minLat + " " + maxLon + " " + maxLat);
+    System.out.println(minEast + " " + minNort + " " + maxEast + " " + maxNort);
 
-    // latitude is y
-    // longitude is x
     BufferedImage out = new BufferedImage(
-      TO_WIDTH * (maxLon - minLon),
-      TO_HEIGHT * (maxLat - minLat),
+      TO_WIDTH * (maxEast - minEast),
+      TO_HEIGHT * (maxNort - minNort),
       BufferedImage.TYPE_INT_RGB);
     Graphics2D g = out.createGraphics();
     g.setColor(Color.gray);
@@ -70,8 +70,8 @@ public class WritePNG {
           throw new RuntimeException("Filename " + file.getName() +
             " doesn't match pattern " + pattern);
         }
-        int lon = Integer.parseInt(matcher.group(1));
-        int lat = Integer.parseInt(matcher.group(2));
+        int east = Integer.parseInt(matcher.group(1));
+        int nort = Integer.parseInt(matcher.group(2));
 
         BufferedImage image;
         try {
@@ -83,8 +83,9 @@ public class WritePNG {
         AffineTransform transform = AffineTransform.getScaleInstance(
           (float)TO_WIDTH / FROM_WIDTH,
           (float)TO_HEIGHT / FROM_HEIGHT);
-        int translateX = TO_WIDTH * (lon - minLon);
-        int translateY = TO_HEIGHT * -(lat - minLat) + (TO_HEIGHT * (maxLat - minLat));
+        int translateX = TO_WIDTH * (east - minEast);
+        int translateY = TO_HEIGHT * -(nort - minNort) +
+          (TO_HEIGHT * (maxNort - minNort));
         transform.translate(translateX * FROM_WIDTH / TO_WIDTH,
           translateY * FROM_HEIGHT / TO_HEIGHT);
 
@@ -93,7 +94,8 @@ public class WritePNG {
         g.setColor(Color.white);
         g.drawRect(translateX, translateY, TO_WIDTH, TO_HEIGHT);
 
-        g.drawString("" + lat + " " + lon, translateX, translateY + 10);
+        g.drawString("" + nort + "km N", translateX + 1, translateY + TO_HEIGHT - 11);
+        g.drawString("" + east + "km E", translateX + 1, translateY + TO_HEIGHT - 1);
 
         System.out.println(file.getName());
         i += 1;
