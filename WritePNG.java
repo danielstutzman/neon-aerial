@@ -121,6 +121,7 @@ public class WritePNG {
             }
             //System.out.print(pixels[j] + " ");
           }
+          imagePlus.getProcessor().setMinAndMax(1000, 4000);
           image = imagePlus.getProcessor().getBufferedImage();
         } else {
           throw new RuntimeException("Unknown tiffLibrary " + tiffLibrary);
