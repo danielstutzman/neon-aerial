@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 CP=.
-CP=$CP:jai_imageio-1_1/lib/jai_imageio.jar
+CP=$CP:vendor/jai/jai_imageio-1_1/lib/jai_imageio.jar
 CP=$CP:vendor/imagej/source/ij.jar
 
 javac -cp $CP WritePNG.java

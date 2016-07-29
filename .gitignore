@@ -3,3 +3,4 @@
 /*.class
 .*.swp
 /vendor/imagej/source
+/vendor/jai/jai_imageio-1_1
