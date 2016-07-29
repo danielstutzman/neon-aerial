@@ -2,7 +2,7 @@
 
 CP=.
 CP=$CP:jai_imageio-1_1/lib/jai_imageio.jar
-CP=$CP:~/dev/imagej/source/ij.jar
+CP=$CP:vendor/imagej/source/ij.jar
 
 javac -cp $CP WritePNG.java
 
