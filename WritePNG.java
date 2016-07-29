@@ -43,8 +43,15 @@ public class WritePNG {
     int minEast = Integer.MAX_VALUE;
     int maxEast = Integer.MIN_VALUE;
     Set<String> tiffExists = new HashSet<String>();
+
     System.err.println("Listing " + inputDirectory + "...");
-    for (File file : inputDirectory.listFiles()) {
+    File[] files = inputDirectory.listFiles();
+    if (files == null) {
+      throw new RuntimeException(
+          "listFiles() for " + inputDirectory + " returned null");
+    }
+
+    for (File file : files) {
       if (file.getName().endsWith(".tif")) {
         Matcher matcher = pattern.matcher(file.getName());
         if (!matcher.matches()) {
