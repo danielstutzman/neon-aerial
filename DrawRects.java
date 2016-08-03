@@ -91,7 +91,7 @@ public class DrawRects {
       float width = header.inputWidth / (maxEasting - minEasting) * outWidth;
       float height = header.inputHeight / (maxNorthing - minNorthing) * outHeight;
       g2d.translate(northwestX, northwestY);
-      g2d.rotate(Math.toRadians(header.rotation));
+      g2d.rotate(-Math.toRadians(header.rotation));
       AffineTransform transform = AffineTransform.getScaleInstance(
         width / shrunkenImage.getWidth(), height / shrunkenImage.getHeight());
       //transform.translate(-width/2 / transform.getScaleX(),
@@ -100,7 +100,7 @@ public class DrawRects {
       g2d.drawRenderedImage(shrunkenImage, transform);
       //g2d.drawRect((int)(- width/2), (int)(- height/2), (int)width, (int)height);
       g2d.drawRect(0, 0, (int)width, (int)height);
-      g2d.rotate(-Math.toRadians(header.rotation));
+      g2d.rotate(Math.toRadians(header.rotation));
       g2d.translate(-northwestX, -northwestY);
     }
     g2d.dispose();
@@ -116,8 +116,3 @@ public class DrawRects {
     float rotation;
   }
 }
-
-
-
-
-
