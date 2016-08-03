@@ -17,7 +17,8 @@ public class DrawRects {
   }
 
   public void mainInstance(String[] argv) throws java.io.IOException {
-    File[] files = new File("/Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D10/CPER/2013/CPER_L2/CPER_Spectrometer/Veg_Indices").listFiles();
+    //File[] files = new File("/Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer").listFiles();
+    File[] files = new File("/Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer/Veg_Indices").listFiles();
     List<Header> headers = new ArrayList<Header>();
     for (File file : files) {
       int inputWidth = 0;
@@ -70,8 +71,8 @@ public class DrawRects {
       if (y1 > maxNorthing) { maxNorthing = y1; }
     }
 
-    int outWidth = 1000;
-    int outHeight = 1000;
+    int outWidth = 4000;
+    int outHeight = 4000;
     BufferedImage img =
       new BufferedImage(outWidth, outHeight, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2d = img.createGraphics();
@@ -83,23 +84,24 @@ public class DrawRects {
       System.out.println(header.easting + " " + header.northing + " " +
         header.inputWidth + " " + header.inputHeight);
       g2d.setColor(Color.RED);
-      float centerX =
+      float northwestX =
         (header.easting - minEasting) / (maxEasting - minEasting) * outWidth;
-      float centerY =
-        (header.northing - minNorthing) / (maxNorthing - minNorthing) * outHeight;
+      float northwestY =
+        (maxNorthing - header.northing) / (maxNorthing - minNorthing) * outHeight;
       float width = header.inputWidth / (maxEasting - minEasting) * outWidth;
       float height = header.inputHeight / (maxNorthing - minNorthing) * outHeight;
-      g2d.translate(centerX, centerY);
+      g2d.translate(northwestX, northwestY);
       g2d.rotate(Math.toRadians(header.rotation));
       AffineTransform transform = AffineTransform.getScaleInstance(
         width / shrunkenImage.getWidth(), height / shrunkenImage.getHeight());
-      transform.translate(-width/2 / transform.getScaleX(),
-        -height/2 / transform.getScaleY());
-      g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+      //transform.translate(-width/2 / transform.getScaleX(),
+      //  -height/2 / transform.getScaleY());
+      g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
       g2d.drawRenderedImage(shrunkenImage, transform);
-      g2d.drawRect((int)(- width/2), (int)(- height/2), (int)width, (int)height);
+      //g2d.drawRect((int)(- width/2), (int)(- height/2), (int)width, (int)height);
+      g2d.drawRect(0, 0, (int)width, (int)height);
       g2d.rotate(-Math.toRadians(header.rotation));
-      g2d.translate(-centerX, -centerY);
+      g2d.translate(-northwestX, -northwestY);
     }
     g2d.dispose();
     ImageIO.write(img, "PNG", new File("draw-rects.png"));
