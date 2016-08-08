@@ -1,9 +1,10 @@
 import ij.ImagePlus;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.renderable.ParameterBlock;
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,7 +16,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 
-public class WritePNG {
+public class CombineL3Camera {
   private static int TO_WIDTH    = 100;
   private static int TO_HEIGHT   = 100;
 
@@ -121,8 +122,15 @@ public class WritePNG {
             }
             //System.out.print(pixels[j] + " ");
           }
-          imagePlus.getProcessor().setMinAndMax(1000, 4000);
+          imagePlus.getProcessor().setMinAndMax(1000, 4000); // for DTM, DSM
           image = imagePlus.getProcessor().getBufferedImage();
+
+          Graphics2D g2 = image.createGraphics();
+          g2.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
+          g2.setColor(new Color(0, 0, 0, 0));
+          g2.fillRect(0,0,3999,3999);
+          g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+
         } else {
           throw new RuntimeException("Unknown tiffLibrary " + tiffLibrary);
         }

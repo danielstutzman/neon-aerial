@@ -1,6 +1,6 @@
-/HARV_overview.png
-/jai_imageio-1_1
-/*.class
 .*.swp
+
+/build/*.class
+/output
 /vendor/imagej/source
 /vendor/jai/jai_imageio-1_1
