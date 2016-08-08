@@ -23,6 +23,13 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 public class ReadBSQ {
+  // e.g. { 0, -1, -1, 1 } means:
+  //  1st layer should become red channel
+  //  2nd layer should be ignored
+  //  3rd layer should be ignored
+  //  4th layer should become green channel
+  private static final int[] LAYER_TO_COLOR = new int[]{ 0, -1, -1, 1 };
+
   public static void main(String[] argv) throws java.io.IOException {
     if (argv.length < 1) {
       System.err.println("First arg should be path to BSQ .dat file");
@@ -48,39 +55,52 @@ public class ReadBSQ {
       }
     }
 
-    double[] input = new double[inputWidth * inputHeight];
     FileInputStream is = new FileInputStream(path);
-    byte bytes[] = new byte[1024];
-    int read;
-    int i = 0;
-    while((i < inputWidth * inputHeight - bytes.length) &&
-        (read = is.read(bytes)) != -1){
-      DoubleBuffer doubles =
-        ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asDoubleBuffer();
-      doubles.get(input, i, read / 8);
-      i += read / 8;
-    }
-
+    int numDoublesReadTotal = 0;
     byte[] aByteArray = new byte[inputWidth * inputHeight * 4];
-    DataBuffer buffer = new DataBufferByte(aByteArray, aByteArray.length);
-    for (i = 0; i < inputWidth * inputHeight; i++) {
-      double level = input[i];
-      byte out;
-      if (level <= 0.0) {
-        out = (byte)0xff;
-      } else if (level >= 1.0) {
-        out = 0x00;
-      } else {
-        out = (byte)((1.0 - level) * 255);
+    for (int layer = 0; layer < LAYER_TO_COLOR.length; layer++) {
+      System.out.println("layer:" + layer);
+      double[] input = new double[inputWidth * inputHeight];
+      byte bytes[] = new byte[1024];
+      int read;
+      while((read = is.read(bytes)) != -1) {
+        DoubleBuffer doubles =
+          ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asDoubleBuffer();
+        if (numDoublesReadTotal + read/8 >=
+            inputWidth * inputHeight * (layer + 1)) {
+          numDoublesReadTotal += read / 8;
+          break;
+        }
+        doubles.get(input, numDoublesReadTotal - (inputWidth * inputHeight * layer),
+          read / 8);
+        numDoublesReadTotal += read / 8;
       }
 
-      aByteArray[i * 4 + 0] = out; // red
-      aByteArray[i * 4 + 1] = out; // green
-      aByteArray[i * 4 + 2] = out; // blue
-      aByteArray[i * 4 + 3] = (level > 0.0) ? (byte)255 : 0; // alpha
+      if (LAYER_TO_COLOR[layer] != -1) {
+        for (int i = 0; i < inputWidth * inputHeight; i++) {
+          double level = input[i];
+          if (layer == 3) {
+            level = level / -0.1;
+          }
+
+          byte out;
+          if (level <= 0.0) {
+            out = (byte)0xff;
+          } else if (level >= 1.0) {
+            out = 0x00;
+          } else {
+            out = (byte)((1.0 - level) * 255);
+          }
+
+          aByteArray[i * 4 + LAYER_TO_COLOR[layer]] = out;
+          if (layer == 0) {
+            aByteArray[i * 4 + 3] = (level > 0.0) ? (byte)255 : 0; // alpha
+          }
+        }
+      }
     }
 
-    //3 bytes per pixel: red, green, blue
+    DataBuffer buffer = new DataBufferByte(aByteArray, aByteArray.length);
     WritableRaster raster = Raster.createInterleavedRaster(
       buffer, inputWidth, inputHeight, 4 * inputWidth, 4, new int[] {0, 1, 2, 3},
       (Point)null);
