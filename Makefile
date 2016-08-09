@@ -1,5 +1,3 @@
-.PHONY: combine_l3_camera
-
 L3_CAMERA_CLASSPATH := build
 L3_CAMERA_CLASSPATH := $(L3_CAMERA_CLASSPATH):vendor/jai/jai_imageio-1_1/lib/jai_imageio.jar
 L3_CAMERA_CLASSPATH := $(L3_CAMERA_CLASSPATH):vendor/imagej/source/ij.jar
