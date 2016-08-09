@@ -6,8 +6,6 @@ L3_CAMERA_CLASSPATH := $(L3_CAMERA_CLASSPATH):vendor/imagej/source/ij.jar
 
 default: output/combine_l3_camera/HARV.png
 
-.PRECIOUS: output/combine_l3_camera/HARV.png
-
 # 1st param: directory
 # 2nd param: output file
 define combine_l3_camera 
