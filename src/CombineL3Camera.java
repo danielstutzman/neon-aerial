@@ -127,11 +127,13 @@ public class CombineL3Camera {
           imagePlus.getProcessor().setMinAndMax(1000, 4000); // for DTM, DSM
           image = imagePlus.getProcessor().getBufferedImage();
 
+          /*
           Graphics2D g2 = image.createGraphics();
           g2.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
           g2.setColor(new Color(0, 0, 0, 0));
           g2.fillRect(0,0,3999,3999);
           g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+          */
 
         } else {
           throw new RuntimeException("Unknown tiffLibrary " + tiffLibrary);
