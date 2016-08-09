@@ -54,7 +54,7 @@ public class CombineL3Camera {
 
     for (File file : files) {
       if (file.getName().endsWith(".tif") &&
-         !file.getName().endsWith("Overview.tif")) {
+         !file.getName().endsWith("verview.tif")) {
         Matcher matcher = pattern.matcher(file.getName());
         if (!matcher.matches()) {
           throw new RuntimeException("Filename " + file.getName() +
@@ -94,7 +94,7 @@ public class CombineL3Camera {
     int i = 0;
     for (File file : inputDirectory.listFiles()) {
       if (file.getName().endsWith(".tif") &&
-         !file.getName().endsWith("Overview.tif")) {
+         !file.getName().endsWith("verview.tif")) {
         System.out.println(file.getName());
         i += 1;
 
