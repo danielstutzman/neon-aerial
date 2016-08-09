@@ -111,9 +111,20 @@ public class CombineL3Camera {
         BufferedImage image;
         if (tiffLibrary.equals("jai")) {
           try {
-            image = ImageIO.read(new File(file.getAbsolutePath()));
+            image = ImageIO.read(file);
+          } catch (java.lang.IllegalArgumentException e) {
+            System.err.println(
+              "Skipping " + file + " because of IllegalArgumentException");
+            // java.lang.IllegalArgumentException: Empty region!
+            // at javax.imageio.ImageReader.computeRegions(ImageReader.java:2702)
+            // at javax.imageio.ImageReader.getDestination(ImageReader.java:2882)
+            // at com.sun.media.imageioimpl.plugins.tiff.TIFFImageReader.read(TIFFImageReader.java:1154)
+            // at javax.imageio.ImageIO.read(ImageIO.java:1448)
+            // at javax.imageio.ImageIO.read(ImageIO.java:1308)
+            e.printStackTrace();
+            continue;
           } catch (java.io.IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("IOException reading " + file, e);
           }
         } else if (tiffLibrary.equals("imagej")) {
           ImagePlus imagePlus = new ImagePlus(file.getAbsolutePath());
