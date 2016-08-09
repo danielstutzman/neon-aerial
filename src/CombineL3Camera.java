@@ -93,7 +93,8 @@ public class CombineL3Camera {
 
     int i = 0;
     for (File file : inputDirectory.listFiles()) {
-      if (file.getName().endsWith(".tif")) {
+      if (file.getName().endsWith(".tif") &&
+         !file.getName().endsWith("Overview.tif")) {
         System.out.println(file.getName());
         i += 1;
 
