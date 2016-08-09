@@ -18,6 +18,7 @@ default: \
 	output/combine_l3_camera/OSBS.png \
 	output/combine_l3_camera/SAWB.png \
 	output/combine_l3_camera/STER.png \
+	output/combine_l3_lidar/TEAK.DSM.png \
 	output/grep_kml/D17.txt
 
 # 1st param: directory
@@ -26,6 +27,11 @@ define combine_l3_camera
   mkdir -p output/combine_l3_camera
 	java -Djava.awt.headless=true -cp $(L3_CAMERA_CLASSPATH) CombineL3Camera \
 		/Volumes/AOP_1.3a_w_WF_v1.1a/$(1) 4000 4000 $(2) jai
+endef
+define combine_l3_lidar
+  mkdir -p output/combine_l3_lidar
+	java -Djava.awt.headless=true -cp $(L3_CAMERA_CLASSPATH) CombineL3Camera \
+		/Volumes/AOP_1.3a_w_WF_v1.1a/$(1) 1000 1000 $(2) imagej
 endef
 
 vendor/imagej/source/ij.jar: 
@@ -79,6 +85,9 @@ output/combine_l3_camera/SAWB.png: build/CombineL3Camera.class
 	$(call combine_l3_camera,1.3a/D1/SAWB/2014/SAWB_L3/SAWB_Camera,$@)
 output/combine_l3_camera/STER.png: build/CombineL3Camera.class
 	$(call combine_l3_camera,1.3a/D10/STER/2013/STER_L3/STER_Camera,$@)
+
+output/combine_l3_lidar/TEAK.DSM.png: build/CombineL3Camera.class
+	$(call combine_l3_lidar,1.3a/D17/TEAK/2013/TEAK_L3/TEAK_Lidar/DSM,$@)
 
 output/grep_kml/D17.txt: build/GrepKML.class
 	mkdir -p output/grep_kml
