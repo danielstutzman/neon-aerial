@@ -53,7 +53,8 @@ public class CombineL3Camera {
     }
 
     for (File file : files) {
-      if (file.getName().endsWith(".tif")) {
+      if (file.getName().endsWith(".tif") &&
+         !file.getName().endsWith("Overview.tif")) {
         Matcher matcher = pattern.matcher(file.getName());
         if (!matcher.matches()) {
           throw new RuntimeException("Filename " + file.getName() +
