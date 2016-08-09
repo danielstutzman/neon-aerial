@@ -36,10 +36,10 @@ build/ShrinkL2Spectrometer.class: src/ShrinkL2Spectrometer.java
 build/GrepKML.class: src/GrepKML.java
 	javac $^ -d build
 
-output/shrink_l2_spectrometer/OSBS/DONE: build/ShrinkL2Spectrometer.class $(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer/Veg_Indices/*.dat)
+output/shrink_l2_spectrometer/OSBS/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/OSBS
 	java -cp build -Djava.awt.headless=true \
-		ShrinkL2Spectrometer output/shrink_l2_spectrometer/OSBS $(filter %.dat,$(^))
+		ShrinkL2Spectrometer output/shrink_l2_spectrometer/OSBS $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 
 output/combine_l2_spectrometer/OSBS.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/OSBS/DONE
