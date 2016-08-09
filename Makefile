@@ -7,7 +7,8 @@ L3_CAMERA_CLASSPATH := $(L3_CAMERA_CLASSPATH):vendor/imagej/source/ij.jar
 default: \
   output/combine_l2_spectrometer/OSBS.png \
 	output/combine_l3_camera/HARV.png \
-	output/combine_l3_camera/OSBS.png
+	output/combine_l3_camera/OSBS.png \
+	output/grep_kml/D17.txt
 
 # 1st param: directory
 # 2nd param: output file
@@ -23,6 +24,8 @@ build/CombineL3Camera.class: src/CombineL3Camera.java
 	javac -cp $(L3_CAMERA_CLASSPATH) $^ -d build
 build/ShrinkL2Spectrometer.class: src/ShrinkL2Spectrometer.java
 	javac $^ -d build
+build/GrepKML.class: src/GrepKML.java
+	javac $^ -d build
 
 output/shrink_l2_spectrometer/OSBS/DONE: build/ShrinkL2Spectrometer.class $(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer/Veg_Indices/*.dat)
 	mkdir -p output/shrink_l2_spectrometer/OSBS
@@ -37,3 +40,7 @@ output/combine_l3_camera/HARV.png: build/CombineL3Camera.class
 	$(call combine_l3_camera,1.3a/D1/HARV/2014/HARV_L3/HARV_Camera,$@)
 output/combine_l3_camera/OSBS.png: build/CombineL3Camera.class
 	$(call combine_l3_camera,1.3a/D3/OSBS/2014/OSBS_L3/OSBS_Camera,$@)
+
+output/grep_kml/D17.txt: build/GrepKML.class
+	mkdir -p output/grep_kml
+	java -cp build GrepKML /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D17/NEON_2013_D17_Camera_Images.kmz > $@

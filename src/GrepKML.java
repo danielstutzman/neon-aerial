@@ -6,9 +6,9 @@ import javax.xml.parsers.SAXParser;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
  
-class ReadZip {
+class GrepKML {
   public static void main(String[] argv) throws java.io.IOException {
-    new ReadZip().mainNonStatic(argv);
+    new GrepKML().mainNonStatic(argv);
   }
 
   public void mainNonStatic(String[] argv) throws java.io.IOException {
