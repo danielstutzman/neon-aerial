@@ -36,7 +36,7 @@ public class CombineL3Camera {
     String tiffLibrary = argv[4];
 
     Pattern pattern = Pattern.compile(
-      "(201[34]_[A-Z]{4}_[0-9])_([0-9]{3})000_([0-9]{4})000_(.*).tif");
+      "(201[3-5]_[A-Z]{4}_[0-9])_([0-9]{3})000_([0-9]{4})000_(.*).tif");
     // "Nort" means UTM Zone 18N northing (divided by 1000 to change meters to km)
     // "East" means UTM Zone 18N easting  (divided by 1000 to change meters to km)
     int minNort = Integer.MAX_VALUE;
