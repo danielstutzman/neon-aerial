@@ -18,10 +18,19 @@ define combine_l3_camera
 		/Volumes/AOP_1.3a_w_WF_v1.1a/$(1) 4000 4000 $(2) jai
 endef
 
+vendor/imagej/source/ij.jar: 
+	cd vendor/imagej && unzip -n ij151d-src.zip # -n means don't overwrite
+	cd vendor/imagej/source && ant build
+
+vendor/jai/jai_imageio-1_1:
+	#RELEASE=jai_imageio-1_1-lib-linux-amd64.tar.gz
+	#curl http://download.java.net/media/jai-imageio/builds/release/1.1/$RELEASE > vendor/jai/$RELEASE
+	cd vendor/jai && tar zxvf jai_imageio-1_1-lib-linux-amd64.tar.gz
+
 build/CombineL2Spectrometer.class: src/CombineL2Spectrometer.java
 	javac $^ -d build
-build/CombineL3Camera.class: src/CombineL3Camera.java
-	javac -cp $(L3_CAMERA_CLASSPATH) $^ -d build
+build/CombineL3Camera.class: src/CombineL3Camera.java vendor/imagej/source/ij.jar vendor/jai/jai_imageio-1_1
+	javac -cp $(L3_CAMERA_CLASSPATH) $< -d build
 build/ShrinkL2Spectrometer.class: src/ShrinkL2Spectrometer.java
 	javac $^ -d build
 build/GrepKML.class: src/GrepKML.java
