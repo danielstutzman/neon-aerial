@@ -11,25 +11,37 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 
-public class DrawRects {
+public class CombineL2Spectrometer {
   public static void main(String[] argv) throws java.io.IOException {
-    new DrawRects().mainInstance(argv);
+    new CombineL2Spectrometer().mainInstance(argv);
   }
 
   public void mainInstance(String[] argv) throws java.io.IOException {
-    File[] files = new File("/Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D10/CPER/2013/CPER_L2/CPER_Spectrometer/Veg_Indices").listFiles();
-    //File[] files = new File("/Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer/Veg_Indices").listFiles();
+    if (argv.length != 3) {
+      System.err.println("1st arg should be directory containing *.dat files");
+      System.err.println("2nd arg should be directory containing *.dat.png files");
+      System.err.println("3rd arg should be .png to create");
+      System.exit(1);
+    }
+    File datDir = new File(argv[0]);
+    File datPngDir = new File(argv[1]);
+    File outputFile = new File(argv[2]);
+
+    File[] hdrFiles = datDir.listFiles();
+    if (hdrFiles.length == 0) {
+      throw new RuntimeException("No files in " + datDir);
+    }
     List<Header> headers = new ArrayList<Header>();
-    for (File file : files) {
+    for (File hdrFile : hdrFiles) {
       int inputWidth = 0;
       int inputHeight = 0;
       float northing = 0.0f;
       float easting = 0.0f;
-      if (file.getName().endsWith("hdr")) {
+      if (hdrFile.getName().endsWith("hdr")) {
         Header header = new Header();
-        header.filename = file.getName();
+        header.hdrFile = hdrFile;
         BufferedReader stream =
-          new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+          new BufferedReader(new InputStreamReader(new FileInputStream(hdrFile)));
         while (true) {
           String line = stream.readLine();
           if (line == null) {
@@ -112,9 +124,13 @@ public class DrawRects {
     g2d.scale(outWidth / (maxEasting - minEasting),
       outHeight / (maxNorthing - minNorthing));
     for (Header header : headers) {
-      File pngFilename = new File(header.filename.replace(".hdr", ".dat.png"));
-      System.err.println("Reading " + pngFilename);
-      BufferedImage shrunkenImage = ImageIO.read(pngFilename);
+      File datPngFile = new File(datPngDir,
+        header.hdrFile.getName().replace(".hdr", ".dat.png"));
+      System.err.println("Reading " + datPngFile);
+      BufferedImage shrunkenImage = ImageIO.read(datPngFile);
+      if (shrunkenImage == null) {
+        throw new RuntimeException("Got null from ImageIO.read of " + datPngFile);
+      }
 
       System.out.println(header.easting + " " + header.northing + " " +
         header.inputWidth + " " + header.inputHeight);
@@ -137,18 +153,18 @@ public class DrawRects {
       g2d.translate(-northwestX, -northwestY);
     }
     g2d.dispose();
-    ImageIO.write(img, "PNG", new File("draw-rects.png"));
+    ImageIO.write(img, "PNG", outputFile);
   }
 
   class Header {
-    String filename;
+    File hdrFile;
     int inputWidth;
     int inputHeight;
     float northing;
     float easting;
     float rotation;
     public String toString() {
-      return filename;
+      return hdrFile.getName();
     }
   }
 

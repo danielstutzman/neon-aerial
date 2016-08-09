@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 
-public class ReadBSQ {
+public class ShrinkL2Spectrometer {
   // e.g. { 0, -1, -1, 1 } means:
   //  1st layer should become red channel
   //  2nd layer should be ignored
@@ -31,15 +31,28 @@ public class ReadBSQ {
   private static final int[] LAYER_TO_COLOR = new int[]{ 0, -1, -1, 1 };
 
   public static void main(String[] argv) throws java.io.IOException {
-    if (argv.length < 1) {
-      System.err.println("First arg should be path to BSQ .dat file");
+    if (argv.length < 2) {
+      System.err.println("First arg should be directory to output to");
+      System.err.println("2nd-nth args should be paths to BSQ .dat files");
       System.exit(1);
     }
-    File path = new File(argv[0]);
+    File outputDir = new File(argv[0]);
+    for (int i = 1; i < argv.length; i++) {
+      File inputPath = new File(argv[i]);
+      File outputPath = new File(outputDir, inputPath.getName() + ".png");
+      if (outputPath.exists()) {
+        System.err.println("Already exists: " + inputPath);
+      } else {
+        shrinkL2Spectrometer(inputPath, outputPath);
+      }
+    }
+  }
 
+  private static void shrinkL2Spectrometer(File inputPath, File outputPath)
+      throws java.io.IOException {
     int inputWidth = 0;
     int inputHeight = 0;
-    File hdrFile = new File(path.getAbsolutePath().replace(".dat", ".hdr"));
+    File hdrFile = new File(inputPath.getAbsolutePath().replace(".dat", ".hdr"));
     BufferedReader stream =
       new BufferedReader(new InputStreamReader(new FileInputStream(hdrFile)));
     while (true) {
@@ -55,7 +68,7 @@ public class ReadBSQ {
       }
     }
 
-    FileInputStream is = new FileInputStream(path);
+    FileInputStream is = new FileInputStream(inputPath);
     int numDoublesReadTotal = 0;
     byte[] aByteArray = new byte[inputWidth * inputHeight * 4];
     for (int layer = 0; layer < LAYER_TO_COLOR.length; layer++) {
@@ -114,6 +127,7 @@ public class ReadBSQ {
     Graphics2D g = out.createGraphics();
     AffineTransform transform = AffineTransform.getScaleInstance(0.1, 0.1);
     g.drawRenderedImage(image, transform);
-    ImageIO.write(out, "png", new File(path.getName() + ".png"));
+    ImageIO.write(out, "png", outputPath);
+    System.err.println(outputPath);
   }
 }
