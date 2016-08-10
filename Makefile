@@ -155,39 +155,39 @@ output/shrink_l2_spectrometer/TEAK/DONE: build/ShrinkL2Spectrometer.class
 	touch $@
 
 output/combine_l2_spectrometer/BART.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/BART/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D1/BART/2014/BART_L2/BART_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/BART $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/BART $@
 output/combine_l2_spectrometer/CPER.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/CPER/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D10/CPER/2013/CPER_L2/CPER_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/CPER $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/CPER $@
 output/combine_l2_spectrometer/DELA.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/DELA/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D8/DELA/2015/DELA_L2/DELA_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/DELA $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/DELA $@
 output/combine_l2_spectrometer/DSNY.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/DSNY/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D3/DSNY/2014/DSNY_L2/DSNY_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/DSNY $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/DSNY $@
 output/combine_l2_spectrometer/GRSM.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/GRSM/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D7/GRSM/2015/GRSM_L2/Spectrometer/Veg_Indices output/shrink_l2_spectrometer/GRSM $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/GRSM $@
 output/combine_l2_spectrometer/HARV.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/HARV/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D1/HARV/2014/HARV_L2/HARV_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/HARV $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/HARV $@
 output/combine_l2_spectrometer/JERC.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/JERC/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D3/JERC/2014/JERC_L2/JERC_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/JERC $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/JERC $@
 output/combine_l2_spectrometer/LENO.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/LENO/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/LENO $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/LENO $@
 output/combine_l2_spectrometer/MLBS.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/MLBS/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D7/MLBS/2015/MLBS_L2/MLBS_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/MLBS $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/MLBS $@
 output/combine_l2_spectrometer/OSBS.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/OSBS/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/OSBS $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/OSBS $@
 output/combine_l2_spectrometer/PROV.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/PROV/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D17/PROV/2013/PROV_L2/PROV_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/PROV $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/PROV $@
 output/combine_l2_spectrometer/SAWB.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/SAWB/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D1/SAWB/2014/SAWB_L2/SAWB_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/SAWB $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/SAWB $@
 output/combine_l2_spectrometer/SJER.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/SJER/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D17/SJER/2013/SJER_L2/SJER_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/SJER $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/SJER $@
 output/combine_l2_spectrometer/SOAP.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/SOAP/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D17/SOAP/2013/SOAP_L2/SOAP_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/SOAP $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/SOAP $@
 output/combine_l2_spectrometer/STER.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/STER/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D10/STER/2013/STER_L2/STER_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/STER $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/STER $@
 output/combine_l2_spectrometer/TALL.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/TALL/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D8/TALL/2015/TALL_L2/TALL_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/TALL $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/TALL $@
 output/combine_l2_spectrometer/TEAK.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/TEAK/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D17/TEAK/2013/TEAK_L2/TEAK_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/TEAK $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer output/shrink_l2_spectrometer/TEAK $@
 
 output/combine_l3_camera/BART.png: build/CombineL3Camera.class
 	$(call combine_l3_camera,1.3a/D1/BART/2014/BART_L3/BART_Camera,$@)

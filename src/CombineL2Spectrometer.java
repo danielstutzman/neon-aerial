@@ -9,6 +9,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 public class CombineL2Spectrometer {
@@ -17,53 +19,47 @@ public class CombineL2Spectrometer {
   }
 
   public void mainInstance(String[] argv) throws java.io.IOException {
-    if (argv.length != 3) {
-      System.err.println("1st arg should be directory containing *.dat files");
-      System.err.println("2nd arg should be directory containing *.dat.png files");
-      System.err.println("3rd arg should be .png to create");
+    if (argv.length != 2) {
+      System.err.println("1st arg should be directory containing *.dat.png files");
+      System.err.println("2nd arg should be .png to create");
       System.exit(1);
     }
-    File datDir = new File(argv[0]);
-    File datPngDir = new File(argv[1]);
-    File outputFile = new File(argv[2]);
+    File pngDir = new File(argv[0]);
+    File outputFile = new File(argv[1]);
 
-    File[] hdrFiles = datDir.listFiles();
-    if (hdrFiles.length == 0) {
-      throw new RuntimeException("No files in " + datDir);
+    File[] allFiles = pngDir.listFiles();
+    if (allFiles == null) {
+      throw new RuntimeException("listFiles returned null for " + pngDir);
     }
-    List<Header> headers = new ArrayList<Header>();
-    for (File hdrFile : hdrFiles) {
-      int inputWidth = 0;
-      int inputHeight = 0;
-      float northing = 0.0f;
-      float easting = 0.0f;
-      if (hdrFile.getName().endsWith("hdr")) {
-        Header header = new Header();
-        header.hdrFile = hdrFile;
-        BufferedReader stream =
-          new BufferedReader(new InputStreamReader(new FileInputStream(hdrFile)));
-        while (true) {
-          String line = stream.readLine();
-          if (line == null) {
-            break;
-          }
 
-          if (line.startsWith("samples")) {
-            header.inputWidth = Integer.parseInt(line.split(" = ")[1]);
-          } else if (line.startsWith("lines")) {
-            header.inputHeight = Integer.parseInt(line.split(" = ")[1]);
-          } else if (line.startsWith("map info")) {
-            String[] parts = line.split(",");
-            header.easting  = Float.parseFloat(parts[3]);
-            header.northing = Float.parseFloat(parts[4]);
-            if (line.contains("rotation=")) {
-              header.rotation =
-                Float.parseFloat(line.split("rotation=")[1].split("}")[0]);
-            }
-          }
-        } // next line
-        headers.add(header);
-      } // end if
+    List<File> pngFiles = new ArrayList<File>();
+    for (File file : allFiles) {
+      if (file.getName().endsWith(".png")) {
+        pngFiles.add(file);
+      }
+    }
+    if (pngFiles.size() == 0) {
+      throw new RuntimeException("No .png files in " + pngDir);
+    }
+
+    List<Header> headers = new ArrayList<Header>();
+    for (File pngFile : pngFiles) {
+      Pattern pattern = Pattern.compile(
+        "W([0-9]+)_H([0-9]+)_N([0-9.]+)_E([0-9.]+)_R(-?[0-9.]+).png");
+      Matcher matcher = pattern.matcher(pngFile.getName());
+      if (!matcher.matches()) {
+        throw new RuntimeException(
+          "Filename " + pngFile + " doesn't match regex " + pattern);
+      }
+
+      Header header = new Header();
+      header.pngFile = pngFile;
+      header.inputWidth = Integer.parseInt(matcher.group(1));
+      header.inputHeight = Integer.parseInt(matcher.group(2));
+      header.northing = Float.parseFloat(matcher.group(3));
+      header.easting = Float.parseFloat(matcher.group(4));
+      header.rotation = Float.parseFloat(matcher.group(5));
+      headers.add(header);
     } // next file
 
     float minNorthing = Float.POSITIVE_INFINITY;
@@ -124,19 +120,17 @@ public class CombineL2Spectrometer {
     g2d.scale(outWidth / (maxEasting - minEasting),
       outHeight / (maxNorthing - minNorthing));
     for (Header header : headers) {
-      File datPngFile = new File(datPngDir,
-        header.hdrFile.getName().replace(".hdr", ".dat.png"));
-      System.err.println("Reading " + datPngFile);
+      System.err.println("Reading " + header.pngFile);
       BufferedImage shrunkenImage;
       try {
-        shrunkenImage = ImageIO.read(datPngFile);
+        shrunkenImage = ImageIO.read(header.pngFile);
       } catch (javax.imageio.IIOException e) {
-        System.err.println("Doesn't exist: " + datPngFile);
+        System.err.println("Doesn't exist: " + header.pngFile);
         e.printStackTrace();
         continue;
       }
       if (shrunkenImage == null) {
-        throw new RuntimeException("Got null from ImageIO.read of " + datPngFile);
+        throw new RuntimeException("Got null from ImageIO.read of " + header.pngFile);
       }
 
       System.out.println(header.easting + " " + header.northing + " " +
@@ -164,14 +158,14 @@ public class CombineL2Spectrometer {
   }
 
   class Header {
-    File hdrFile;
+    File pngFile;
     int inputWidth;
     int inputHeight;
     float northing;
     float easting;
     float rotation;
     public String toString() {
-      return hdrFile.getName();
+      return pngFile.getName();
     }
   }
 

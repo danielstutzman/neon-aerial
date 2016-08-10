@@ -36,6 +36,10 @@ public class ShrinkL2Spectrometer {
     // Don't pop up Java dock icon just because we're using AWT classes
     System.setProperty("java.awt.headless", "true");
 
+    new ShrinkL2Spectrometer().mainInstance(argv);
+  }
+
+  public void mainInstance(String[] argv) throws java.io.IOException {
     if (argv.length < 2) {
       System.err.println("First arg should be directory to output to");
       System.err.println("2nd-nth args should be paths to BSQ .dat files");
@@ -45,22 +49,33 @@ public class ShrinkL2Spectrometer {
     for (int i = 1; i < argv.length; i++) {
       File inputPath = new File(argv[i]);
       File hdrFile = new File(inputPath.getAbsolutePath().replace(".dat", ".hdr"));
-      File outputPath = new File(outputDir, inputPath.getName() + ".png");
       if (!hdrFile.exists()) {
         System.err.println("Doesn't exist: " + hdrFile);
-      } else if (outputPath.exists()) {
+      }
+      Header header = extractHeader(hdrFile);
+
+      File outputPath = new File(outputDir,
+        "W" + header.inputWidth  + "_" +
+        "H" + header.inputHeight + "_" +
+        "N" + header.northing    + "_" +
+        "E" + header.easting     + "_" +
+        "R" + header.rotation    +
+        ".png");
+      if (outputPath.exists()) {
         System.err.println("Already exists: " + inputPath);
       } else {
-        shrinkL2Spectrometer(inputPath, hdrFile, outputPath);
+        try {
+          shrinkL2Spectrometer(inputPath, header, outputPath);
+        } catch (RuntimeException e) {
+          e.printStackTrace();
+          System.err.println("Skipping " + inputPath);
+        }
       }
     }
   }
 
-  private static void shrinkL2Spectrometer(
-      File inputPath, File hdrFile, File outputPath) throws java.io.IOException {
-    int inputWidth = 0;
-    int inputHeight = 0;
-    int dataType = 0;
+  private Header extractHeader(File hdrFile) throws java.io.IOException {
+    Header header = new Header();
     BufferedReader stream =
       new BufferedReader(new InputStreamReader(new FileInputStream(hdrFile)));
     while (true) {
@@ -70,21 +85,37 @@ public class ShrinkL2Spectrometer {
       }
 
       if (line.startsWith("samples")) {
-        inputWidth = Integer.parseInt(line.split(" = ")[1]);
+        header.inputWidth = Integer.parseInt(line.split(" = ")[1]);
       } else if (line.startsWith("lines")) {
-        inputHeight = Integer.parseInt(line.split(" = ")[1]);
+        header.inputHeight = Integer.parseInt(line.split(" = ")[1]);
       } else if (line.startsWith("data type")) {
-        dataType = Integer.parseInt(line.split(" = ")[1]);
+        header.dataType = Integer.parseInt(line.split(" = ")[1]);
+      } else if (line.startsWith("map info")) {
+        String[] parts = line.split(",");
+        header.easting  = Float.parseFloat(parts[3]);
+        header.northing = Float.parseFloat(parts[4]);
+        if (line.contains("rotation=")) {
+          header.rotation =
+            Float.parseFloat(line.split("rotation=")[1].split("}")[0]);
+        }
       }
     }
+    return header;
+  }
+
+  private static void shrinkL2Spectrometer(
+      File inputPath, Header header, File outputPath) throws java.io.IOException {
+    int inputWidth = header.inputWidth;
+    int inputHeight = header.inputHeight;
 
     byte[] aByteArray;
-    if (dataType == 4) { // 4 = 32-bit single-precision floating-point
+    if (header.dataType == 4) { // 4 = 32-bit single-precision floating-point
       aByteArray = readFloats(inputPath, inputWidth, inputHeight);
-    } else if (dataType == 5) { // 5 = 64-bit double-precision floating-point
+    } else if (header.dataType == 5) { // 5 = 64-bit double-precision floating-point
       aByteArray = readDoubles(inputPath, inputWidth, inputHeight);
     } else {
-      throw new RuntimeException("Don't know how to read data type = " + dataType);
+      throw new RuntimeException(
+        "Don't know how to read data type = " + header.dataType);
     }
 
     DataBuffer buffer = new DataBufferByte(aByteArray, aByteArray.length);
@@ -211,5 +242,14 @@ public class ShrinkL2Spectrometer {
       }
     }
     return aByteArray;
+  }
+
+  class Header {
+    int inputWidth;
+    int inputHeight;
+    int dataType;
+    float northing;
+    float easting;
+    float rotation;
   }
 }
