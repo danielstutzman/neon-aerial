@@ -21,6 +21,9 @@ public class CombineL3Camera {
   private static int TO_HEIGHT   = 100;
 
   public static void main(String[] argv) {
+    // Don't pop up Java dock icon just because we're using AWT classes
+    System.setProperty("java.awt.headless", "true");
+
     if (argv.length < 2) {
       System.err.println("1st arg: directory to read .tif files from");
       System.err.println("2nd arg: FROM_WIDTH");

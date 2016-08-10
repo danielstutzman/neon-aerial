@@ -31,6 +31,9 @@ public class ShrinkL2Spectrometer {
   private static final int[] LAYER_TO_COLOR = new int[]{ 0, -1, -1, 1 };
 
   public static void main(String[] argv) throws java.io.IOException {
+    // Don't pop up Java dock icon just because we're using AWT classes
+    System.setProperty("java.awt.headless", "true");
+
     if (argv.length < 2) {
       System.err.println("First arg should be directory to output to");
       System.err.println("2nd-nth args should be paths to BSQ .dat files");
