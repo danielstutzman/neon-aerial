@@ -1,7 +1,7 @@
 .PHONY: copy_offline
 
-#VOLUME := /Volumes/AOP_1.3a_w_WF_v1.1a
-VOLUME := offline
+VOLUME := /Volumes/AOP_1.3a_w_WF_v1.1a
+#VOLUME := offline
 
 L3_CAMERA_CLASSPATH := build
 L3_CAMERA_CLASSPATH := $(L3_CAMERA_CLASSPATH):vendor/jai/jai_imageio-1_1/lib/jai_imageio.jar
