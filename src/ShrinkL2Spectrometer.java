@@ -39,20 +39,22 @@ public class ShrinkL2Spectrometer {
     File outputDir = new File(argv[0]);
     for (int i = 1; i < argv.length; i++) {
       File inputPath = new File(argv[i]);
+      File hdrFile = new File(inputPath.getAbsolutePath().replace(".dat", ".hdr"));
       File outputPath = new File(outputDir, inputPath.getName() + ".png");
-      if (outputPath.exists()) {
+      if (!hdrFile.exists()) {
+        System.err.println("Doesn't exist: " + hdrFile);
+      } else if (outputPath.exists()) {
         System.err.println("Already exists: " + inputPath);
       } else {
-        shrinkL2Spectrometer(inputPath, outputPath);
+        shrinkL2Spectrometer(inputPath, hdrFile, outputPath);
       }
     }
   }
 
-  private static void shrinkL2Spectrometer(File inputPath, File outputPath)
-      throws java.io.IOException {
+  private static void shrinkL2Spectrometer(
+      File inputPath, File hdrFile, File outputPath) throws java.io.IOException {
     int inputWidth = 0;
     int inputHeight = 0;
-    File hdrFile = new File(inputPath.getAbsolutePath().replace(".dat", ".hdr"));
     BufferedReader stream =
       new BufferedReader(new InputStreamReader(new FileInputStream(hdrFile)));
     while (true) {
