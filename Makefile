@@ -58,7 +58,7 @@ default: \
 
 # 1st param: directory
 # 2nd param: output file
-define combine_l3_camera 
+define combine_l3_camera
   mkdir -p output/combine_l3_camera
 	java -cp $(L3_CAMERA_CLASSPATH) CombineL3Camera $(VOLUME)/$(1) 4000 4000 $(2) jai
 endef
@@ -67,7 +67,7 @@ define combine_l3_lidar
 	java -cp $(L3_CAMERA_CLASSPATH) CombineL3Camera $(VOLUME)/$(1) 1000 1000 $(2) imagej
 endef
 
-vendor/imagej/source/ij.jar: 
+vendor/imagej/source/ij.jar:
 	cd vendor/imagej && unzip -n ij151d-src.zip # -n means don't overwrite
 	cd vendor/imagej/source && ant build
 
