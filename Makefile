@@ -1,3 +1,8 @@
+.PHONY: copy_offline
+
+#VOLUME := /Volumes/AOP_1.3a_w_WF_v1.1a
+VOLUME := offline
+
 L3_CAMERA_CLASSPATH := build
 L3_CAMERA_CLASSPATH := $(L3_CAMERA_CLASSPATH):vendor/jai/jai_imageio-1_1/lib/jai_imageio.jar
 L3_CAMERA_CLASSPATH := $(L3_CAMERA_CLASSPATH):vendor/imagej/source/ij.jar
@@ -55,13 +60,11 @@ default: \
 # 2nd param: output file
 define combine_l3_camera 
   mkdir -p output/combine_l3_camera
-	java -cp $(L3_CAMERA_CLASSPATH) CombineL3Camera \
-		/Volumes/AOP_1.3a_w_WF_v1.1a/$(1) 4000 4000 $(2) jai
+	java -cp $(L3_CAMERA_CLASSPATH) CombineL3Camera $(VOLUME)/$(1) 4000 4000 $(2) jai
 endef
 define combine_l3_lidar
   mkdir -p output/combine_l3_lidar
-	java -cp $(L3_CAMERA_CLASSPATH) CombineL3Camera \
-		/Volumes/AOP_1.3a_w_WF_v1.1a/$(1) 1000 1000 $(2) imagej
+	java -cp $(L3_CAMERA_CLASSPATH) CombineL3Camera $(VOLUME)/$(1) 1000 1000 $(2) imagej
 endef
 
 vendor/imagej/source/ij.jar: 
@@ -84,107 +87,107 @@ build/GrepKML.class: src/GrepKML.java
 
 output/shrink_l2_spectrometer/BART/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/BART
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/BART $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D1/BART/2014/BART_L2/BART_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/BART $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D1/BART/2014/BART_L2/BART_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/CPER/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/CPER
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/CPER $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D10/CPER/2013/CPER_L2/CPER_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/CPER $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D10/CPER/2013/CPER_L2/CPER_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/DELA/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/DELA
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/DELA $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/DELA/2015/DELA_L2/DELA_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/DELA $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D8/DELA/2015/DELA_L2/DELA_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/DSNY/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/DSNY
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/DSNY $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/DSNY/2014/DSNY_L2/DSNY_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/DSNY $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D3/DSNY/2014/DSNY_L2/DSNY_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/GRSM/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/GRSM
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/GRSM $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D7/GRSM/2015/GRSM_L2/Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/GRSM $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D7/GRSM/2015/GRSM_L2/Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/HARV/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/HARV
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/H/Volumes/AOP_1.3a_w_WF_v1.1ater %.dat,$(wildcard $(VOLUME)/1.3a/D1/HARV/2014/HARV_L2/HARV_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/HARV $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D1/HARV/2014/HARV_L2/HARV_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/JERC/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/JERC
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/JERC $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/JERC/2014/JERC_L2/JERC_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/JERC $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D3/JERC/2014/JERC_L2/JERC_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/LENO/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/LENO
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/LENO $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/LENO $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/MLBS/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/MLBS
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/MLBS $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D7/MLBS/2015/MLBS_L2/MLBS_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/MLBS $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D7/MLBS/2015/MLBS_L2/MLBS_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/OSBS/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/OSBS
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/OSBS $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/OSBS $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/PROV/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/PROV
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/P/Volumes/AOP_1.3a_w_WF_v1.1ater %.dat,$(wildcard $(VOLUME)/1.3a/D17/PROV/2013/PROV_L2/PROV_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/PROV $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D17/PROV/2013/PROV_L2/PROV_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/SAWB/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/SAWB
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/SAWB $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D1/SAWB/2014/SAWB_L2/SAWB_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/SAWB $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D1/SAWB/2014/SAWB_L2/SAWB_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/SJER/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/SJER
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/SJER $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D17/SJER/2013/SJER_L2/SJER_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/SJER $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D17/SJER/2013/SJER_L2/SJER_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/SOAP/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/SOAP
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/SOAP $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D17/SOAP/2013/SOAP_L2/SOAP_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/SOAP $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D17/SOAP/2013/SOAP_L2/SOAP_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/STER/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/STER
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/STER $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D10/STER/2013/STER_L2/STER_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/STER $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D10/STER/2013/STER_L2/STER_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/TALL/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/TALL
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/TALL $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/TALL/2015/TALL_L2/TALL_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/TALL $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D8/TALL/2015/TALL_L2/TALL_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 output/shrink_l2_spectrometer/TEAK/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/TEAK
-	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/TEAK $(filter %.dat,$(wildcard /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D17/TEAK/2013/TEAK_L2/TEAK_Spectrometer/Veg_Indices/*.dat))
+	java -cp build ShrinkL2Spectrometer output/shrink_l2_spectrometer/TEAK $(filter %.dat,$(wildcard $(VOLUME)/1.3a/D17/TEAK/2013/TEAK_L2/TEAK_Spectrometer/Veg_Indices/*.dat))
 	touch $@
 
 output/combine_l2_spectrometer/BART.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/BART/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D1/BART/2014/BART_L2/BART_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/BART $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D1/BART/2014/BART_L2/BART_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/BART $@
 output/combine_l2_spectrometer/CPER.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/CPER/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D10/CPER/2013/CPER_L2/CPER_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/CPER $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D10/CPER/2013/CPER_L2/CPER_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/CPER $@
 output/combine_l2_spectrometer/DELA.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/DELA/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/DELA/2015/DELA_L2/DELA_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/DELA $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D8/DELA/2015/DELA_L2/DELA_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/DELA $@
 output/combine_l2_spectrometer/DSNY.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/DSNY/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/DSNY/2014/DSNY_L2/DSNY_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/DSNY $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D3/DSNY/2014/DSNY_L2/DSNY_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/DSNY $@
 output/combine_l2_spectrometer/GRSM.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/GRSM/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D7/GRSM/2015/GRSM_L2/Spectrometer/Veg_Indices output/shrink_l2_spectrometer/GRSM $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D7/GRSM/2015/GRSM_L2/Spectrometer/Veg_Indices output/shrink_l2_spectrometer/GRSM $@
 output/combine_l2_spectrometer/HARV.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/HARV/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D1/HARV/2014/HARV_L2/HARV_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/HARV $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D1/HARV/2014/HARV_L2/HARV_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/HARV $@
 output/combine_l2_spectrometer/JERC.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/JERC/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/JERC/2014/JERC_L2/JERC_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/JERC $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D3/JERC/2014/JERC_L2/JERC_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/JERC $@
 output/combine_l2_spectrometer/LENO.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/LENO/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/LENO $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/LENO $@
 output/combine_l2_spectrometer/MLBS.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/MLBS/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D7/MLBS/2015/MLBS_L2/MLBS_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/MLBS $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D7/MLBS/2015/MLBS_L2/MLBS_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/MLBS $@
 output/combine_l2_spectrometer/OSBS.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/OSBS/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/OSBS $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D3/OSBS/2014/OSBS_L2/OSBS_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/OSBS $@
 output/combine_l2_spectrometer/PROV.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/PROV/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D17/PROV/2013/PROV_L2/PROV_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/PROV $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D17/PROV/2013/PROV_L2/PROV_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/PROV $@
 output/combine_l2_spectrometer/SAWB.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/SAWB/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D1/SAWB/2014/SAWB_L2/SAWB_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/SAWB $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D1/SAWB/2014/SAWB_L2/SAWB_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/SAWB $@
 output/combine_l2_spectrometer/SJER.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/SJER/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D17/SJER/2013/SJER_L2/SJER_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/SJER $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D17/SJER/2013/SJER_L2/SJER_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/SJER $@
 output/combine_l2_spectrometer/SOAP.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/SOAP/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D17/SOAP/2013/SOAP_L2/SOAP_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/SOAP $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D17/SOAP/2013/SOAP_L2/SOAP_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/SOAP $@
 output/combine_l2_spectrometer/STER.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/STER/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D10/STER/2013/STER_L2/STER_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/STER $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D10/STER/2013/STER_L2/STER_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/STER $@
 output/combine_l2_spectrometer/TALL.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/TALL/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/TALL/2015/TALL_L2/TALL_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/TALL $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D8/TALL/2015/TALL_L2/TALL_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/TALL $@
 output/combine_l2_spectrometer/TEAK.png: build/CombineL2Spectrometer.class output/shrink_l2_spectrometer/TEAK/DONE
-	java -cp build -Djava.awt.headless=true CombineL2Spectrometer /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D17/TEAK/2013/TEAK_L2/TEAK_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/TEAK $@
+	java -cp build -Djava.awt.headless=true CombineL2Spectrometer $(VOLUME)/1.3a/D17/TEAK/2013/TEAK_L2/TEAK_Spectrometer/Veg_Indices output/shrink_l2_spectrometer/TEAK $@
 
 output/combine_l3_camera/BART.png: build/CombineL3Camera.class
 	$(call combine_l3_camera,1.3a/D1/BART/2014/BART_L3/BART_Camera,$@)
@@ -248,4 +251,17 @@ output/combine_l3_lidar/TEAK.DSM.png: build/CombineL3Camera.class
 
 output/grep_kml/D17.txt: build/GrepKML.class
 	mkdir -p output/grep_kml
-	java -cp build GrepKML /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D17/NEON_2013_D17_Camera_Images.kmz > $@
+	java -cp build GrepKML $(VOLUME)/1.3a/D17/NEON_2013_D17_Camera_Images.kmz > $@
+
+copy_offline:
+	mkdir -p offline/1.3a/D17
+	cp -v /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D17/NEON_2013_D17_Camera_Images.kmz offline/1.3a/D17
+
+	mkdir -p offline/1.3a/D8/LENO/2015/LENO_L3/LENO_Camera
+	cp -v `/bin/ls -S /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L3/LENO_Camera/*_image.tif | head -2` offline/1.3a/D8/LENO/2015/LENO_L3/LENO_Camera
+
+	mkdir -p offline/1.3a/D8/LENO/2015/LENO_L3/LENO_LiDAR/DSM
+	cp -v `/bin/ls -S /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L3/LENO_LiDAR/DSM/*_DSM.tif | head -2` offline/1.3a/D8/LENO/2015/LENO_L3/LENO_LiDAR/DSM
+
+	mkdir -p offline/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices
+	cp -v `/bin/ls /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices/* | head -4` offline/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices

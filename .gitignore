@@ -2,6 +2,7 @@
 .DS_Store
 
 /build/*.class
+/offline
 /output
 /vendor/imagej/source
 /vendor/jai/jai_imageio-1_1
