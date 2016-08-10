@@ -127,7 +127,14 @@ public class CombineL2Spectrometer {
       File datPngFile = new File(datPngDir,
         header.hdrFile.getName().replace(".hdr", ".dat.png"));
       System.err.println("Reading " + datPngFile);
-      BufferedImage shrunkenImage = ImageIO.read(datPngFile);
+      BufferedImage shrunkenImage;
+      try {
+        shrunkenImage = ImageIO.read(datPngFile);
+      } catch (javax.imageio.IIOException e) {
+        System.err.println("Doesn't exist: " + datPngFile);
+        e.printStackTrace();
+        continue;
+      }
       if (shrunkenImage == null) {
         throw new RuntimeException("Got null from ImageIO.read of " + datPngFile);
       }
