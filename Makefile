@@ -264,4 +264,4 @@ copy_offline:
 	cp -v `/bin/ls -S /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L3/LENO_LiDAR/DSM/*_DSM.tif | head -2` offline/1.3a/D8/LENO/2015/LENO_L3/LENO_LiDAR/DSM
 
 	mkdir -p offline/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices
-	cp -v `/bin/ls /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices/* | head -4` offline/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices
+	cp -v `/bin/ls /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices/* | head -2` offline/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices
