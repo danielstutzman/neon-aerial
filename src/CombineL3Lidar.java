@@ -1,3 +1,5 @@
+import ij.ImagePlus;
+import ij.process.FloatProcessor;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -5,8 +7,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,11 +19,9 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 
-public class CombineL3Camera {
-  private static int FROM_WIDTH  = 4000;
-  private static int FROM_HEIGHT = 4000;
-  private static int TO_WIDTH    =  100;
-  private static int TO_HEIGHT   =  100;
+public class CombineL3Lidar {
+  private static int TO_WIDTH  = 100;
+  private static int TO_HEIGHT = 100;
 
   public static void main(String[] argv) {
     // Don't pop up Java dock icon just because we're using AWT classes
@@ -34,14 +36,17 @@ public class CombineL3Camera {
     File outputPng = new File(argv[1]);
 
     Pattern pattern = Pattern.compile(
-      "(201[3-5]_[A-Z]{4}_(v0)?[0-9])_([0-9]{3})000_([0-9]{4})000_(.*).tif");
+      "(201[3-5]_[A-Z]{4}_[0-9](_v01)?)_([0-9]{3})000_([0-9]{4})000_(.*).tif");
     // "Nort" means UTM Zone 18N northing (divided by 1000 to change meters to km)
     // "East" means UTM Zone 18N easting  (divided by 1000 to change meters to km)
     int minNort = Integer.MAX_VALUE;
     int maxNort = Integer.MIN_VALUE;
     int minEast = Integer.MAX_VALUE;
     int maxEast = Integer.MIN_VALUE;
-    Set<String> tiffExists = new HashSet<String>();
+    float minValue = Float.POSITIVE_INFINITY;
+    float maxValue = Float.NEGATIVE_INFINITY;
+    Map<String, FloatProcessor> filenameToImagePlus =
+      new HashMap<String, FloatProcessor>();
 
     System.err.println("Listing " + inputDirectory + "...");
     File[] files = inputDirectory.listFiles();
@@ -52,7 +57,10 @@ public class CombineL3Camera {
 
     for (File file : files) {
       if (file.getName().endsWith(".tif") &&
-         !file.getName().endsWith("verview.tif")) {
+         !file.getName().endsWith("verview.tif") &&
+         !file.getName().startsWith(".")) {
+        System.out.println(file.getName());
+
         Matcher matcher = pattern.matcher(file.getName());
         if (!matcher.matches()) {
           throw new RuntimeException("Filename " + file.getName() +
@@ -76,11 +84,29 @@ public class CombineL3Camera {
           maxNort = nort;
         }
 
-        tiffExists.add(file.getName());
+        ImagePlus imagePlus = new ImagePlus(file.getAbsolutePath());
+        float[] pixels = (float[])imagePlus.getProcessor().getPixels();
+        for (int j = 0; j < pixels.length; j++) {
+          float value = pixels[j];
+          if (value != -9999.0f) {
+            if (value < minValue) {
+              minValue = value;
+            }
+            if (value > maxValue) {
+              maxValue = value;
+            }
+          }
+        }
+        FloatProcessor shrunken =
+          (FloatProcessor)imagePlus.getProcessor().resize(TO_WIDTH, TO_HEIGHT);
+        filenameToImagePlus.put(file.getName(), shrunken);
       }
     }
-    System.out.println(minEast + " " + minNort + " " + maxEast + " " + maxNort);
+    System.out.println("easting: " + minEast + " to " + maxEast);
+    System.out.println("northing: " + minNort + " to " + maxNort);
+    System.out.println("value: " + minValue + " " + maxValue);
 
+    System.err.println("Drawing to image");
     BufferedImage out = new BufferedImage(
       TO_WIDTH * (maxEast - minEast + 1),
       TO_HEIGHT * (maxNort - minNort + 1),
@@ -89,13 +115,10 @@ public class CombineL3Camera {
     g.setColor(Color.gray);
     g.fillRect(0, 0, out.getWidth(), out.getHeight());
 
-    int i = 0;
     for (File file : inputDirectory.listFiles()) {
       if (file.getName().endsWith(".tif") &&
-         !file.getName().endsWith("verview.tif")) {
-        System.out.println(file.getName());
-        i += 1;
-
+         !file.getName().endsWith("verview.tif") &&
+         !file.getName().startsWith(".")) {
         Matcher matcher = pattern.matcher(file.getName());
         if (!matcher.matches()) {
           throw new RuntimeException("Filename " + file.getName() +
@@ -106,51 +129,15 @@ public class CombineL3Camera {
         int nort = Integer.parseInt(matcher.group(4));
         String lastPart = matcher.group(5);
 
-        BufferedImage image;
-        try {
-          image = ImageIO.read(file);
-        } catch (java.lang.IllegalArgumentException e) {
-          System.err.println(
-            "Skipping " + file + " because of IllegalArgumentException");
-          // java.lang.IllegalArgumentException: Empty region!
-          // at javax.imageio.ImageReader.computeRegions(ImageReader.java:2702)
-          // at javax.imageio.ImageReader.getDestination(ImageReader.java:2882)
-          // at com.sun.media.imageioimpl.plugins.tiff.TIFFImageReader.read(TIFFImageReader.java:1154)
-          // at javax.imageio.ImageIO.read(ImageIO.java:1448)
-          // at javax.imageio.ImageIO.read(ImageIO.java:1308)
-          e.printStackTrace();
-          continue;
-        } catch (java.io.IOException e) {
-          throw new RuntimeException("IOException reading " + file, e);
-        }
+        FloatProcessor processor = filenameToImagePlus.get(file.getName());
+        processor.setMinAndMax(minValue, maxValue);
+        BufferedImage image = processor.getBufferedImage();
 
-        String tiffToTheEast =
-          firstPart + "_" + (east + 1) + "000_" + nort + "000_" + lastPart + ".tif";
-        float justifyX;
-        if (tiffExists.contains(tiffToTheEast)) {
-          justifyX = TO_WIDTH - (image.getWidth() * (float)TO_WIDTH / FROM_WIDTH);
-        } else {
-          justifyX = 0;
-        }
-
-        String tiffToTheSouth =
-          firstPart + "_" + east + "000_" + (nort - 1) + "000_" + lastPart + ".tif";
-        float justifyY;
-        if (tiffExists.contains(tiffToTheSouth)) {
-          justifyY = TO_HEIGHT - (image.getHeight() * (float)TO_HEIGHT / FROM_HEIGHT);
-        } else {
-          justifyY = 0;
-        }
-
-        AffineTransform transform = AffineTransform.getScaleInstance(
-          (float)TO_WIDTH / FROM_WIDTH,
-          (float)TO_HEIGHT / FROM_HEIGHT);
+        AffineTransform transform = new AffineTransform(); // identity transform
         int translateX = TO_WIDTH * (east - minEast);
         int translateY = TO_HEIGHT * -(nort - minNort) +
           (TO_HEIGHT * (maxNort - minNort));
-        transform.translate((translateX + justifyX) * FROM_WIDTH / TO_WIDTH,
-          (translateY + justifyY) * FROM_HEIGHT / TO_HEIGHT);
-
+        transform.translate(translateX, translateY);
         g.drawRenderedImage(image, transform);
 
         g.setColor(Color.white);
@@ -158,20 +145,14 @@ public class CombineL3Camera {
 
         g.drawString("" + nort + "km N", translateX + 1, translateY + TO_HEIGHT - 11);
         g.drawString("" + east + "km E", translateX + 1, translateY + TO_HEIGHT - 1);
-
-        File outputPngTmp = new File(outputPng.getName() + ".tmp");
-        try {
-          ImageIO.write(out, "PNG", outputPngTmp);
-        } catch (java.io.IOException e) {
-          throw new RuntimeException("IOException from ImageIO.write", e);
-        }
-
-        boolean didRenameSucceed = outputPngTmp.renameTo(outputPng);
-        if (!didRenameSucceed) {
-          throw new RuntimeException(
-              "Couldn't rename " + outputPngTmp + " to " + outputPng);
-        }
       } // end if ends with .tif
     } // loop to next file
+
+    System.err.println("Writing PNG");
+    try {
+      ImageIO.write(out, "PNG", outputPng);
+    } catch (java.io.IOException e) {
+      throw new RuntimeException("IOException from ImageIO.write", e);
+    }
   }
 }

@@ -3,10 +3,6 @@
 VOLUME := /Volumes/AOP_1.3a_w_WF_v1.1a
 #VOLUME := offline
 
-L3_CAMERA_CLASSPATH := build
-L3_CAMERA_CLASSPATH := $(L3_CAMERA_CLASSPATH):vendor/jai/jai_imageio-1_1/lib/jai_imageio.jar
-L3_CAMERA_CLASSPATH := $(L3_CAMERA_CLASSPATH):vendor/imagej/source/ij.jar
-
 default: \
   output/combine_l2_spectrometer/BART.png \
   output/combine_l2_spectrometer/CPER.png \
@@ -25,7 +21,19 @@ default: \
   output/combine_l2_spectrometer/STER.png \
   output/combine_l2_spectrometer/TALL.png \
   output/combine_l2_spectrometer/TEAK.png \
-	output/combine_l3_lidar/BART.DSM.png \
+	output/combine_l3_camera/BART.png \
+	output/combine_l3_camera/CPER.png \
+	output/combine_l3_camera/DELA.png \
+	output/combine_l3_camera/DSNY.png \
+	output/combine_l3_camera/GRSM.png \
+	output/combine_l3_camera/HARV.png \
+	output/combine_l3_camera/LENO.png \
+	output/combine_l3_camera/MLBS.png \
+	output/combine_l3_camera/JERC.png \
+	output/combine_l3_camera/OSBS.png \
+	output/combine_l3_camera/SAWB.png \
+	output/combine_l3_camera/STER.png \
+ 	output/combine_l3_lidar/BART.DSM.png \
 	output/combine_l3_lidar/CPER.DSM.png \
 	output/combine_l3_lidar/DELA.DSM.png \
 	output/combine_l3_lidar/DSNY.DSM.png \
@@ -42,29 +50,17 @@ default: \
 	output/combine_l3_lidar/STER.DSM.png \
 	output/combine_l3_lidar/TALL.DSM.png \
 	output/combine_l3_lidar/TEAK.DSM.png \
-	output/combine_l3_camera/BART.png \
-	output/combine_l3_camera/CPER.png \
-	output/combine_l3_camera/DELA.png \
-	output/combine_l3_camera/DSNY.png \
-	output/combine_l3_camera/GRSM.png \
-	output/combine_l3_camera/HARV.png \
-	output/combine_l3_camera/LENO.png \
-	output/combine_l3_camera/MLBS.png \
-	output/combine_l3_camera/JERC.png \
-	output/combine_l3_camera/OSBS.png \
-	output/combine_l3_camera/SAWB.png \
-	output/combine_l3_camera/STER.png \
 	output/grep_kml/D17.txt
 
 # 1st param: directory
 # 2nd param: output file
 define combine_l3_camera
   mkdir -p output/combine_l3_camera
-	java -cp $(L3_CAMERA_CLASSPATH) CombineL3Camera $(VOLUME)/$(1) 4000 4000 $(2) jai
+	java -cp build:vendor/jai/jai_imageio-1_1/lib/jai_imageio.jar CombineL3Camera $(VOLUME)/$(1) $(2)
 endef
 define combine_l3_lidar
   mkdir -p output/combine_l3_lidar
-	java -cp $(L3_CAMERA_CLASSPATH) CombineL3Camera $(VOLUME)/$(1) 1000 1000 $(2) imagej
+	java -cp build:vendor/imagej/source/ij.jar CombineL3Lidar $(VOLUME)/$(1) $(2)
 endef
 
 vendor/imagej/source/ij.jar:
@@ -78,8 +74,10 @@ vendor/jai/jai_imageio-1_1:
 
 build/CombineL2Spectrometer.class: src/CombineL2Spectrometer.java
 	javac $^ -d build
-build/CombineL3Camera.class: src/CombineL3Camera.java vendor/imagej/source/ij.jar vendor/jai/jai_imageio-1_1
-	javac -cp $(L3_CAMERA_CLASSPATH) $< -d build
+build/CombineL3Camera.class: src/CombineL3Camera.java vendor/jai/jai_imageio-1_1
+	javac -cp vendor/jai/jai_imageio-1_1/lib/jai_imageio.jar $< -d build
+build/CombineL3Lidar.class: src/CombineL3Lidar.java vendor/imagej/source/ij.jar
+	javac -cp vendor/imagej/source/ij.jar $< -d build
 build/ShrinkL2Spectrometer.class: src/ShrinkL2Spectrometer.java
 	javac $^ -d build
 build/GrepKML.class: src/GrepKML.java
@@ -214,39 +212,39 @@ output/combine_l3_camera/SAWB.png: build/CombineL3Camera.class
 output/combine_l3_camera/STER.png: build/CombineL3Camera.class
 	$(call combine_l3_camera,1.3a/D10/STER/2013/STER_L3/STER_Camera,$@)
 
-output/combine_l3_lidar/BART.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/BART.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D1/BART/2014/BART_L3/BART_Lidar/DSM,$@)
-output/combine_l3_lidar/CPER.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/CPER.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D10/CPER/2013/CPER_L3/CPER_Lidar/DSM,$@)
-output/combine_l3_lidar/DELA.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/DELA.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D8/DELA/2015/DELA_L3/DELA_Lidar/DSM,$@)
-output/combine_l3_lidar/DSNY.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/DSNY.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D3/DSNY/2014/DSNY_L3/DSNY_Lidar/DSM,$@)
-output/combine_l3_lidar/GRSM.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/GRSM.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D7/GRSM/2015/GRSM_L3/GRSM_Lidar/DSM,$@)
-output/combine_l3_lidar/HARV.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/HARV.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D1/HARV/2014/HARV_L3/HARV_Lidar/DSM,$@)
-output/combine_l3_lidar/JERC.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/JERC.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D3/JERC/2014/JERC_L3/JERC_Lidar/DSM,$@)
-output/combine_l3_lidar/LENO.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/LENO.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D8/LENO/2015/LENO_L3/LENO_LiDAR/DSM,$@)
-output/combine_l3_lidar/MLBS.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/MLBS.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D7/MLBS/2015/MLBS_L3/MLBS_Lidar/DSM,$@)
-output/combine_l3_lidar/OSBS.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/OSBS.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D3/OSBS/2014/OSBS_L3/OSBS_Lidar/DSM,$@)
-output/combine_l3_lidar/PROV.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/PROV.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D17/PROV/2013/PROV_L3/DSM,$@)
-output/combine_l3_lidar/SAWB.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/SAWB.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D1/SAWB/2014/SAWB_L3/SAWB_Lidar/DSM,$@)
-output/combine_l3_lidar/SOAP.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/SOAP.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D17/SOAP/2013/SOAP_L3/SOAP_Lidar/DSM,$@)
-output/combine_l3_lidar/SJER.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/SJER.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D17/SJER/2013/SJER_L3/SJER_Lidar/DSM,$@)
-output/combine_l3_lidar/STER.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/STER.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D10/STER/2013/STER_L3/STER_Lidar/DSM,$@)
-output/combine_l3_lidar/TALL.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/TALL.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D8/TALL/2015/TALL_L3/DSM,$@)
-output/combine_l3_lidar/TEAK.DSM.png: build/CombineL3Camera.class
+output/combine_l3_lidar/TEAK.DSM.png: build/CombineL3Lidar.class
 	$(call combine_l3_lidar,1.3a/D17/TEAK/2013/TEAK_L3/TEAK_Lidar/DSM,$@)
 
 output/grep_kml/D17.txt: build/GrepKML.class
