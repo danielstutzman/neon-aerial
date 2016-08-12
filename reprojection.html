@@ -34,11 +34,41 @@
         })
       });
 
+      var sites = [
+        { name: 'HARV', lat: 42.3761555, lon: -72.2211262 },
+        { name: 'SAWB', lat: 42.5352324, lon: -71.2702518 }
+      ];
+
+      layers['labels'] = new ol.layer.Vector({
+        source: new ol.source.Vector({
+          features: sites.map(function(site) {
+            return new ol.Feature({
+              geometry: new ol.geom.Point(ol.proj.fromLonLat([site.lon, site.lat])),
+              name: site.name
+            })
+          })
+        }),
+        style: function(feature) {
+          return new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: 20,
+              stroke: new ol.style.Stroke({ color: '#fff' }),
+              fill: new ol.style.Fill({ color: '#3399CC' })
+            }),
+            text: new ol.style.Text({
+              text: feature.get('name'),
+              fill: new ol.style.Fill({ color: '#fff' })
+            })
+          });
+        }
+      });
+
       var map = new ol.Map({
         pixelRatio: 1, // keep map from twitching
         layers: [
           layers['osm'],
-          layers['combine_l3_camera']
+          layers['combine_l3_camera'],
+          layers['labels']
         ],
         target: 'map',
         view: new ol.View({
