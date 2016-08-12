@@ -11,6 +11,11 @@
   <body>
     <div id="map" class="map"></div>
     <script>
+      if (window.devicePixelRatio != 1.0) {
+        window.alert('Browser devicePixelRatio is ' + window.devicePixelRatio +
+          '; zoom to 100% for best looking results and map that doesn\'t twitch');
+      }
+
       proj4.defs('EPSG:32618', '+proj=utm +zone=18 +ellps=WGS84 +datum=WGS84 ' +
           '+units=m +no_defs');
 
@@ -30,6 +35,7 @@
       });
 
       var map = new ol.Map({
+        pixelRatio: 1, // keep map from twitching
         layers: [
           layers['osm'],
           layers['combine_l3_camera']
