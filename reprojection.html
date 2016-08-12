@@ -10,6 +10,8 @@
   </head>
   <body>
     <div id="map" class="map"></div>
+    <button onClick='addLayer()'>Add Layer</button>
+    <button onClick='removeLayer()'>Remove Layer</button>
     <script>
       if (window.devicePixelRatio != 1.0) {
         window.alert('Browser devicePixelRatio is ' + window.devicePixelRatio +
@@ -86,6 +88,13 @@
 
       var graticule = new ol.Graticule();
       graticule.setMap(map);
+
+      function addLayer() {
+        map.addLayer(layers['combine_l3_camera']);
+      }
+      function removeLayer() {
+        map.removeLayer(layers['combine_l3_camera']);
+      }
     </script>
   </body>
 </html>
