@@ -66,11 +66,13 @@ endef
 vendor/imagej/source/ij.jar:
 	cd vendor/imagej && unzip -n ij151d-src.zip # -n means don't overwrite
 	cd vendor/imagej/source && ant build
-
 vendor/jai/jai_imageio-1_1:
 	#RELEASE=jai_imageio-1_1-lib-linux-amd64.tar.gz
 	#curl http://download.java.net/media/jai-imageio/builds/release/1.1/$RELEASE > vendor/jai/$RELEASE
 	cd vendor/jai && tar zxvf jai_imageio-1_1-lib-linux-amd64.tar.gz
+vendor/openlayers/v3.17.1-dist:
+	#curl https://github.com/openlayers/ol3/releases/download/v3.17.1/v3.17.1-dist.zip > vendor/openlayers/v3.17.1-dist.zip
+	cd vendor/openlayers && unzip v3.17.1-dist.zip
 
 build/CombineL2Spectrometer.class: src/CombineL2Spectrometer.java
 	javac $^ -d build
