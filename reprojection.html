@@ -66,6 +66,10 @@
       });
 
       var map = new ol.Map({
+        controls:
+          ol.control.defaults({
+            attributionOptions: { collapsible: false }
+          }).extend([ new ol.control.ScaleLine() ]),
         pixelRatio: 1, // keep map from twitching
         layers: [
           layers['osm'],
