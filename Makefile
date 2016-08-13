@@ -73,6 +73,10 @@ vendor/jai/jai_imageio-1_1:
 vendor/openlayers/v3.17.1-dist:
 	#curl https://github.com/openlayers/ol3/releases/download/v3.17.1/v3.17.1-dist.zip > vendor/openlayers/v3.17.1-dist.zip
 	cd vendor/openlayers && unzip v3.17.1-dist.zip
+vendor/json/JSON-java.jar:
+	mkdir -p vendor/json/build
+	javac vendor/json/JSON-java/*.java -d vendor/json/build
+	jar cvf $@ -C vendor/json/build .
 
 build/CombineL2Spectrometer.class: src/CombineL2Spectrometer.java
 	javac $^ -d build
