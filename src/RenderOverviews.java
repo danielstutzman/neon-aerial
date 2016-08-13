@@ -6,7 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -14,6 +16,16 @@ import org.json.JSONWriter;
 public class RenderOverviews {
   private static Pattern L3_CAMERA_PATTERN = Pattern.compile(
     "(201[3-5]_[A-Z]{4}_(v0)?[0-9])_([0-9]{6})_([0-9]{7})_(.*).tif");
+
+  private static Map<String, String> SITE_NAME_TO_PROJECTION;
+  static {
+    Map<String, String> m = new HashMap<String, String>();
+    m.put("BART", "EPSG:32619");
+    m.put("HARV", "EPSG:32618");
+    m.put("LENO", "EPSG:32616");
+    m.put("SAWB", "EPSG:32619");
+    SITE_NAME_TO_PROJECTION = m;
+  }
 
   public static void main(String[] argv) {
     if (argv.length != 1) {
@@ -64,10 +76,10 @@ public class RenderOverviews {
     }
     for (File siteDir : siteDirs) {
       if (siteDir.isDirectory()) {
-if (siteDir.getName().equals("LENO") || siteDir.getName().equals("HARV")) {
-        List<Layer> newLayers = renderSiteDir(siteDir);
-        layers.addAll(newLayers);
-}
+        if (SITE_NAME_TO_PROJECTION.containsKey(siteDir.getName())) {
+          List<Layer> newLayers = renderSiteDir(siteDir);
+          layers.addAll(newLayers);
+        }
       }
     }
     return layers;
@@ -136,13 +148,9 @@ if (siteDir.getName().equals("LENO") || siteDir.getName().equals("HARV")) {
     Layer newLayer = new Layer();
     newLayer.layerType = "combine_l3_camera";
     newLayer.siteName = siteName;
-    if (newLayer.siteName.equals("LENO")) {
-      newLayer.projection = "EPSG:32616";
-    } else if (newLayer.siteName.equals("HARV")) {
-      newLayer.projection = "EPSG:32618";
-    } else {
-      throw new RuntimeException("Don't know projection for site name " +
-        newLayer.siteName);
+    newLayer.projection = SITE_NAME_TO_PROJECTION.get(siteName);
+    if (newLayer.projection == null) {
+      throw new RuntimeException("Don't know projection for site name " + siteName);
     }
     newLayer.minEasting = minEasting;
     newLayer.maxEasting = maxEasting;
