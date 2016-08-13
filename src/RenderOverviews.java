@@ -221,6 +221,12 @@ public class RenderOverviews {
             fileMinEastingFromTag + ",northing=" + fileMaxNorthingFromTag);
         }
 
+        if (siteName.equals("LENO") && fileMinEasting > 387000) {
+          System.err.println("Skipping " + tiffFile +
+            " since it's LENO east of 387000");
+          continue;
+        }
+
         if (fileMinEasting < allMinEasting) {
           allMinEasting = fileMinEasting;
         }

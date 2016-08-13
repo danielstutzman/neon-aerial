@@ -124,6 +124,10 @@ public class CombineL3Camera {
           throw new RuntimeException("IOException reading " + file, e);
         }
 
+        if (file.getName().startsWith("LENO") && east > 387) {
+          System.err.println("Skipping " + file + " since it's LENO east of 387000");
+        }
+
         String tiffToTheEast =
           firstPart + "_" + (east + 1) + "000_" + nort + "000_" + lastPart + ".tif";
         float justifyX;
