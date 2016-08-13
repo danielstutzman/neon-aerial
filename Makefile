@@ -1,4 +1,4 @@
-.PHONY: copy_offline
+.PHONY: copy_offline render_overviews
 
 VOLUME := /Volumes/AOP_1.3a_w_WF_v1.1a
 #VOLUME := offline
@@ -88,6 +88,8 @@ build/ShrinkL2Spectrometer.class: src/ShrinkL2Spectrometer.java
 	javac $^ -d build
 build/GrepKML.class: src/GrepKML.java
 	javac $^ -d build
+build/RenderOverviews.class: src/RenderOverviews.java vendor/json/JSON-java.jar
+	javac -sourcepath src -cp vendor/json/JSON-java.jar $< -d build
 
 output/shrink_l2_spectrometer/BART/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/BART
@@ -269,3 +271,6 @@ copy_offline:
 
 	mkdir -p offline/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices
 	cp -v `/bin/ls /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices/* | head -2` offline/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices
+
+render_overviews: build/RenderOverviews.class
+	java -cp build:vendor/json/JSON-java.jar RenderOverviews /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a #offline/1.3a

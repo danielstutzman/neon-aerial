@@ -18,6 +18,8 @@
           '; zoom to 100% for best looking results and map that doesn\'t twitch');
       }
 
+      proj4.defs('EPSG:32616', '+proj=utm +zone=16 +ellps=WGS84 +datum=WGS84 ' +
+          '+units=m +no_defs');
       proj4.defs('EPSG:32618', '+proj=utm +zone=18 +ellps=WGS84 +datum=WGS84 ' +
           '+units=m +no_defs');
 
@@ -27,29 +29,9 @@
         source: new ol.source.OSM()
       });
 
-      layers['combine_l3_camera'] = new ol.layer.Image({
-        opacity: 1.0,
-        source: new ol.source.ImageStatic({
-          url: 'output/combine_l3_camera/HARV.png',
-          crossOrigin: '',
-          projection: 'EPSG:32618',
-          imageExtent: [ 725000, 4694000, 735000, 4720000]
-        })
-      });
-
-      var sites = [
-        { name: 'HARV', lat: 42.3761555, lon: -72.2211262 },
-        { name: 'SAWB', lat: 42.5352324, lon: -71.2702518 }
-      ];
-
       layers['labels'] = new ol.layer.Vector({
         source: new ol.source.Vector({
-          features: sites.map(function(site) {
-            return new ol.Feature({
-              geometry: new ol.geom.Point(ol.proj.fromLonLat([site.lon, site.lat])),
-              name: site.name
-            })
-          })
+          features: []
         }),
         style: function(feature) {
           return new ol.style.Style({
@@ -75,14 +57,13 @@
         pixelRatio: 1, // keep map from twitching
         layers: [
           layers['osm'],
-          layers['combine_l3_camera'],
           layers['labels']
         ],
         target: 'map',
         view: new ol.View({
           projection: 'EPSG:3857',
-          center: ol.proj.fromLonLat([ -73.3652076, 42.3761258 ]),
-          zoom: 9
+          center: ol.proj.fromLonLat([ -99, 38 ]),
+          zoom: 5
         })
       });
 
@@ -95,6 +76,40 @@
       function removeLayer() {
         map.removeLayer(layers['combine_l3_camera']);
       }
+
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          var newLayers = JSON.parse(xhr.responseText);
+          for (var i = 0; i < newLayers.length; i++) {
+            var newLayer = newLayers[i];
+            console.log('Loaded', newLayers);
+            map.addLayer(new ol.layer.Image({
+              opacity: 1.0,
+              source: new ol.source.ImageStatic({
+                crossOrigin: '',
+                projection: newLayer.projection,
+                url: 'output/combine_l3_camera/' + newLayer.siteName + '.png',
+                imageExtent: [
+                  newLayer.minEasting,
+                  newLayer.minNorthing,
+                  newLayer.maxEasting,
+                  newLayer.maxNorthing
+                ]
+              })
+            }));
+            layers['labels'].getSource().addFeature(new ol.Feature({
+              geometry: new ol.geom.Point(ol.proj.fromLonLat(
+                proj4(newLayer.projection, 'WGS84').forward(
+                  [ newLayer.minEasting, newLayer.minNorthing ]))),
+              name: newLayer.siteName
+            }));
+          }
+        }
+      };
+      xhr.open('GET', 'output/layers.json', true);
+      xhr.send();
+
     </script>
   </body>
 </html>
