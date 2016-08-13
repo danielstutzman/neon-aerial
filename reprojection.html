@@ -18,7 +18,11 @@
           '; zoom to 100% for best looking results and map that doesn\'t twitch');
       }
 
+      proj4.defs('EPSG:32613', '+proj=utm +zone=13 +ellps=WGS84 +datum=WGS84 ' +
+          '+units=m +no_defs');
       proj4.defs('EPSG:32616', '+proj=utm +zone=16 +ellps=WGS84 +datum=WGS84 ' +
+          '+units=m +no_defs');
+      proj4.defs('EPSG:32617', '+proj=utm +zone=17 +ellps=WGS84 +datum=WGS84 ' +
           '+units=m +no_defs');
       proj4.defs('EPSG:32618', '+proj=utm +zone=18 +ellps=WGS84 +datum=WGS84 ' +
           '+units=m +no_defs');
