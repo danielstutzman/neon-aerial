@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.14/proj4-src.js"></script>
   </head>
   <body>
-    <div id="map" class="map"></div>
+    <div id="map" class="map" style='width: 600px; height: 400px'></div>
     <button onClick='addLayer()'>Add Layer</button>
     <button onClick='removeLayer()'>Remove Layer</button>
     <script>
@@ -110,7 +110,7 @@
         view: new ol.View({
           projection: 'EPSG:3857',
           center: ol.proj.fromLonLat([ -99, 38 ]),
-          zoom: 5
+          zoom: 3.7
         })
       });
 
