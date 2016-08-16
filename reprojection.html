@@ -29,6 +29,13 @@
       proj4.defs('EPSG:32619', '+proj=utm +zone=19 +ellps=WGS84 +datum=WGS84 ' +
           '+units=m +no_defs');
 
+      var DOMAIN_NUM_TO_COLOR = {
+         1: '#46b569',  2: '#13372b',  3: '#a1ba3a',  4: '#ffa23b',  5: '#46256c',
+         6: '#477b4a',  7: '#477b4a',  8: '#b5c489',  9: '#597978', 10: '#7d6e37',
+        11: '#72963e', 12: '#72963e', 13: '#244357', 14: '#b4763b', 15: '#1d5d5f',
+        16: '#5d83a8', 17: '#97895c', 18: '#7a8e99', 19: '#7a8e99', 20: '#f2b01e',
+      };
+
       var layers = {};
 
       layers['osm'] = new ol.layer.Tile({
@@ -64,14 +71,12 @@
           console.log(feature.get('DomainID'));
           return new ol.style.Style({
             fill: new ol.style.Fill({
-              color: '#' + Math.floor(Math.random() * 16777215).toString(16)
+              color: DOMAIN_NUM_TO_COLOR[feature.get('DomainID')]
             }),
-            stroke: new ol.style.Stroke({ color: 'black', width: 0.5 }),
             text: new ol.style.Text({
               text: 'D' + feature.get('DomainID').toString(),
-              fill: new ol.style.Fill({ color: 'white' }),
-              font: 'normal 16pt sans-serif',
-              stroke: new ol.style.Stroke({ color: 'black', width: 3 })
+              fill: new ol.style.Fill({ color: 'rgba(255,255,255,0.2)' }),
+              font: 'bold 20pt sans-serif',
             })
           });
         }
@@ -97,9 +102,9 @@
         pixelRatio: 1, // keep map from twitching
         layers: [
           layers['osm'],
-          layers['labels']
           //layers['osm'],
           layers['domains'],
+          layers['labels'],
           layers['states']
         ],
         target: 'map',
