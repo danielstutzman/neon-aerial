@@ -7,5 +7,6 @@
 /vendor/imagej/source
 /vendor/jai/jai_imageio-1_1
 /vendor/json/build
+/vendor/neon
 /vendor/json/JSON-java.jar
 /vendor/openlayers/v3.17.1-dist
