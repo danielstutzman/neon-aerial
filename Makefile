@@ -285,3 +285,8 @@ output/neon_domains.geojson: vendor/neon/NEON_Domains.shp
 	cat output/neon_domains_big.geojson | sed 's/\([0-9]*\.[0-9]\)[0-9]*/\1/g' \
 		>output/neon_domains.geojson
 	rm -f output/neon_domains_big.geojson
+
+output/usa_states.geojson: vendor/naturalearthdata/ne_110m_admin_1_states_provinces.shp
+	~/dev/mapshaper/bin/mapshaper \
+		-i vendor/naturalearthdata/ne_110m_admin_1_states_provinces.shp \
+		-o output/usa_states.geojson

@@ -77,6 +77,18 @@
         }
       });
 
+      layers['states'] = new ol.layer.Vector({
+        source: new ol.source.Vector({
+          url: 'output/usa_states.geojson',
+          format: new ol.format.GeoJSON()
+        }),
+        style: function(feature, resolution) {
+          return new ol.style.Style({
+            stroke: new ol.style.Stroke({ color: 'rgba(0,0,0,0.2)', width: 0.5 })
+          });
+        }
+      });
+
       var map = new ol.Map({
         controls:
           ol.control.defaults({
@@ -88,6 +100,7 @@
           layers['labels']
           //layers['osm'],
           layers['domains'],
+          layers['states']
         ],
         target: 'map',
         view: new ol.View({
