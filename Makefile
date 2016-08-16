@@ -274,3 +274,14 @@ copy_offline:
 
 render_overviews: build/RenderOverviews.class
 	java -cp build:vendor/json/JSON-java.jar:vendor/imagej/source/ij.jar:vendor/tiff_tags/tiff_tags.jar RenderOverviews /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a #offline/1.3a
+
+output/neon_domains.geojson: vendor/neon/NEON_Domains.shp
+	rm -f output/neon_domains.geojson output/neon_domains_big.geojson
+	~/dev/mapshaper/bin/mapshaper \
+		-i vendor/neon/NEON_Domains.shp \
+		-simplify 5% \
+		-filter 'DomainName != "Taiga" && DomainName != "Tundra"' \
+		-o output/neon_domains_big.geojson
+	cat output/neon_domains_big.geojson | sed 's/\([0-9]*\.[0-9]\)[0-9]*/\1/g' \
+		>output/neon_domains.geojson
+	rm -f output/neon_domains_big.geojson

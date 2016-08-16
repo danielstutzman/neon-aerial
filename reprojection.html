@@ -55,6 +55,28 @@
         minResolution: 1000
       });
 
+      layers['domains'] = new ol.layer.Vector({
+        source: new ol.source.Vector({
+          url: 'output/neon_domains.geojson',
+          format: new ol.format.GeoJSON()
+        }),
+        style: function(feature, resolution) {
+          console.log(feature.get('DomainID'));
+          return new ol.style.Style({
+            fill: new ol.style.Fill({
+              color: '#' + Math.floor(Math.random() * 16777215).toString(16)
+            }),
+            stroke: new ol.style.Stroke({ color: 'black', width: 0.5 }),
+            text: new ol.style.Text({
+              text: 'D' + feature.get('DomainID').toString(),
+              fill: new ol.style.Fill({ color: 'white' }),
+              font: 'normal 16pt sans-serif',
+              stroke: new ol.style.Stroke({ color: 'black', width: 3 })
+            })
+          });
+        }
+      });
+
       var map = new ol.Map({
         controls:
           ol.control.defaults({
@@ -64,6 +86,8 @@
         layers: [
           layers['osm'],
           layers['labels']
+          //layers['osm'],
+          layers['domains'],
         ],
         target: 'map',
         view: new ol.View({
