@@ -68,7 +68,6 @@
           format: new ol.format.GeoJSON()
         }),
         style: function(feature, resolution) {
-          console.log(feature.get('DomainID'));
           return new ol.style.Style({
             fill: new ol.style.Fill({
               color: DOMAIN_NUM_TO_COLOR[feature.get('DomainID')]
@@ -131,7 +130,6 @@
           var newLayers = JSON.parse(xhr.responseText);
           for (var i = 0; i < newLayers.length; i++) {
             var newLayer = newLayers[i];
-            console.log('Loaded', newLayers);
             map.addLayer(new ol.layer.Image({
               opacity: 1.0,
               source: new ol.source.ImageStatic({
