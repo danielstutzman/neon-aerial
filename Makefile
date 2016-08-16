@@ -280,7 +280,6 @@ output/neon_domains.geojson: vendor/neon/NEON_Domains.shp
 	~/dev/mapshaper/bin/mapshaper \
 		-i vendor/neon/NEON_Domains.shp \
 		-simplify 5% \
-		-filter 'DomainName != "Taiga" && DomainName != "Tundra"' \
 		-o output/neon_domains_big.geojson
 	cat output/neon_domains_big.geojson | sed 's/\([0-9]*\.[0-9]\)[0-9]*/\1/g' \
 		>output/neon_domains.geojson
