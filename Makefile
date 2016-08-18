@@ -299,5 +299,5 @@ output/shrink_l1_spectrometer/LENO.NIS1_20150720_155636_atmcor.SkyViewFactor.png
 	mkdir -p output/shrink_l1_spectrometer
 	java -cp build:vendor/netcdf/netcdfAll-4.6.6.jar:vendor/slf4j/slf4j-1.7.21/slf4j-simple-1.7.21.jar ShrinkL1Spectrometer \
 		offline/1.3a/D8/LENO/2015/LENO_L1/LENO_Spectrometer/NIS1_20150720_155636_atmcor.h5\
-		Sky_View_Factor \
+		Reflectance 200 \
 		output/shrink_l1_spectrometer/LENO.NIS1_20150720_155636_atmcor.SkyViewFactor.png
