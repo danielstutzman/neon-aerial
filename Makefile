@@ -1,4 +1,4 @@
-.PHONY: copy_offline render_overviews
+.PHONY: copy_offline render_overviews read_hdf5
 
 VOLUME := /Volumes/AOP_1.3a_w_WF_v1.1a
 #VOLUME := offline
@@ -90,6 +90,8 @@ build/GrepKML.class: src/GrepKML.java
 	javac $^ -d build
 build/RenderOverviews.class: src/RenderOverviews.java vendor/json/JSON-java.jar
 	javac -sourcepath src -cp vendor/json/JSON-java.jar:vendor/tiff_tags/tiff_tags.jar $< -d build
+build/ShrinkL1Spectrometer.class: src/ShrinkL1Spectrometer.java vendor/netcdf/netcdfAll-4.6.6.jar
+	javac -cp vendor/netcdf/netcdfAll-4.6.6.jar $< -d build
 
 output/shrink_l2_spectrometer/BART/DONE: build/ShrinkL2Spectrometer.class
 	mkdir -p output/shrink_l2_spectrometer/BART
@@ -272,6 +274,9 @@ copy_offline:
 	mkdir -p offline/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices
 	cp -v `/bin/ls /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices/* | head -2` offline/1.3a/D8/LENO/2015/LENO_L2/LENO_Spectrometer/Veg_Indices
 
+	mkdir -p offline/1.3a/D8/LENO/2015/LENO_L1/LENO_Spectrometer
+	cp -v `/bin/ls /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a/D8/LENO/2015/LENO_L1/LENO_Spectrometer/* | head -1` offline/1.3a/D8/LENO/2015/LENO_L1/LENO_Spectrometer
+
 render_overviews: build/RenderOverviews.class
 	java -cp build:vendor/json/JSON-java.jar:vendor/imagej/source/ij.jar:vendor/tiff_tags/tiff_tags.jar RenderOverviews /Volumes/AOP_1.3a_w_WF_v1.1a/1.3a #offline/1.3a
 
@@ -289,3 +294,10 @@ output/usa_states.geojson: vendor/naturalearthdata/ne_110m_admin_1_states_provin
 	~/dev/mapshaper/bin/mapshaper \
 		-i vendor/naturalearthdata/ne_110m_admin_1_states_provinces.shp \
 		-o output/usa_states.geojson
+
+output/shrink_l1_spectrometer/LENO.NIS1_20150720_155636_atmcor.SkyViewFactor.png: build/ShrinkL1Spectrometer.class
+	mkdir -p output/shrink_l1_spectrometer
+	java -cp build:vendor/netcdf/netcdfAll-4.6.6.jar:vendor/slf4j/slf4j-1.7.21/slf4j-simple-1.7.21.jar ShrinkL1Spectrometer \
+		offline/1.3a/D8/LENO/2015/LENO_L1/LENO_Spectrometer/NIS1_20150720_155636_atmcor.h5\
+		Sky_View_Factor \
+		output/shrink_l1_spectrometer/LENO.NIS1_20150720_155636_atmcor.SkyViewFactor.png

@@ -7,6 +7,8 @@
 /vendor/imagej/source
 /vendor/jai/jai_imageio-1_1
 /vendor/json/build
+/vendor/netcdf/toolsUI-4.6.6.jar
 /vendor/neon
 /vendor/json/JSON-java.jar
+/vendor/slf4j/slf4j-1.7.21
 /vendor/openlayers/v3.17.1-dist
