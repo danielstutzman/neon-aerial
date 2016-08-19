@@ -25,35 +25,60 @@ import ucar.nc2.Variable;
 import ucar.ma2.Array;
 
 public class ShrinkL1Spectrometer {
+  private static final int WIDTH = 987;
+  private static final int HEIGHT = 13303;
+
   public static void main(String[] argv) throws java.io.IOException {
     // Don't pop up Java dock icon just because we're using AWT classes
     System.setProperty("java.awt.headless", "true");
 
     if (argv.length != 2) {
       System.err.println("1st argument is path to .h5 file to read");
-      System.err.println("2nd argument is dataset name (e.g. Sky_View_Factor)");
+      System.err.println("2nd argument is directory to put .png files to");
       System.exit(1);
     }
     File h5File = new File(argv[0]);
-    String datasetName = argv[1];
+    File pngDir = new File(argv[1]);
 
     NetcdfFile ncfile = NetcdfFile.open(h5File.getAbsolutePath());
 
-    Variable var = ncfile.findVariable(datasetName);
-    //Array data = var.read();
+    String mapInfo = ncfile.findVariable("map_info").read().toString();
+    String[] mapInfoValues = mapInfo.split(",");
+    if (!mapInfoValues[0].equals("UTM") ||
+        !mapInfoValues[1].equals("1") ||
+        !mapInfoValues[2].equals("1")) {
+      throw new RuntimeException("Expected UTM,1,1 in map_info[0-2]");
+    }
+    float easting = Float.parseFloat(mapInfoValues[3]);
+    float northing = Float.parseFloat(mapInfoValues[4]);
+    if (Float.parseFloat(mapInfoValues[5]) != 1.0f ||
+        Float.parseFloat(mapInfoValues[6]) != 1.0f) {
+      throw new RuntimeException("Expected 1.0,1.0 in map_info[5-6]");
+    }
+    String utmZoneNum = mapInfoValues[7];
+    if (!mapInfoValues[8].equals("North") ||
+        !mapInfoValues[9].equals("WGS-84") ||
+        !mapInfoValues[10].equals("units=Meters")) {
+      throw new RuntimeException(
+          "Expected North,WGS-84,units=Meters in map_info[8-10]");
+    }
+    if (!mapInfoValues[11].startsWith("rotation=")) {
+      throw new RuntimeException("Expected rotation=... in map_info[11]");
+    }
+    float rotation = Float.parseFloat(mapInfoValues[11].split("=")[1]);
 
+    Variable reflectanceVar = ncfile.findVariable("Reflectance");
     for (int layerNum : new int[] { 100, 200, 300, 400 }) {
       Array data;
       try {
-        data = var.read(new int[]{layerNum, 0, 0}, new int[] {1, 13303, 987});
+        data = reflectanceVar.read(
+          new int[]{layerNum, 0, 0}, new int[] {1, HEIGHT, WIDTH});
       } catch (ucar.ma2.InvalidRangeException e) {
         throw new RuntimeException(e);
       }
-      System.out.println(Arrays.toString(var.getShape())); //[1, 13303, 987]
-      int inputWidth = var.getShape()[2];
-      int inputHeight = var.getShape()[1];
-      //NCdumpW.printArray(data, "ATCOR_Input_File", System.out, null);
-      //byte[] bytes = (byte[])data.get1DJavaArray(byte.class);
+      System.out.println(Arrays.toString(reflectanceVar.getShape()));
+      int inputWidth = reflectanceVar.getShape()[2];
+      int inputHeight = reflectanceVar.getShape()[1];
       short[] shorts = (short[])data.get1DJavaArray(short.class);
 
       short minValue = Short.MAX_VALUE;
@@ -72,7 +97,6 @@ public class ShrinkL1Spectrometer {
           maxValue = value;
         }
       }
-      System.out.println("minValue: " + minValue + ", maxValue: " + maxValue);
 
       byte[] bytes = new byte[shorts.length * 2];
       for (int i = 0; i < shorts.length; i++) {
@@ -94,7 +118,13 @@ public class ShrinkL1Spectrometer {
       WritableRaster raster = Raster.createWritableRaster(sm, buffer, null);
       BufferedImage image = new BufferedImage(colorModel, raster, false, null);
 
-      File pngFile = new File("shrink_l1_spectrometer." + layerNum + ".png");
+      File pngFile = new File(pngDir,
+        "W" + WIDTH    + "_" +
+        "H" + HEIGHT   + "_" +
+        "N" + northing + "_" +
+        "E" + easting  + "_" +
+        "R" + rotation + "_" +
+        "L" + layerNum + ".png");
       ImageIO.write(image, "png", pngFile);
       System.err.println("Wrote " + pngFile);
     } // next layerNum
