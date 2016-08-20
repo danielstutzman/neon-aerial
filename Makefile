@@ -299,10 +299,13 @@ shrink_l1_spectrometer: build/ShrinkL1Spectrometer.class
 	mkdir -p output/shrink_l1_spectrometer/LENO
 	java -cp build:vendor/netcdf/netcdfAll-4.6.6.jar:vendor/slf4j/slf4j-1.7.21/slf4j-simple-1.7.21.jar ShrinkL1Spectrometer \
 		$(VOLUME)/1.3a/D8/LENO/2015/LENO_L1/LENO_Spectrometer \
-		output/shrink_l1_spectrometer/LENO
+		output/shrink_l1_spectrometer/LENO \
+		25 75
 
 combine_l1_spectrometer: build/CombineL1OrL2Spectrometer.class
 	mkdir -p output/combine_l1_spectrometer
-	java -cp build CombineL1OrL2Spectrometer \
-		output/shrink_l1_spectrometer/LENO \
-		output/combine_l1_spectrometer/LENO.png
+	for LAYER in `/bin/ls output/shrink_l1_spectrometer/LENO`; do \
+		java -cp build CombineL1OrL2Spectrometer \
+			output/shrink_l1_spectrometer/LENO/$$LAYER \
+			output/combine_l1_spectrometer/LENO.$$LAYER.png; \
+	done

@@ -25,19 +25,22 @@ import ucar.nc2.Variable;
 import ucar.ma2.Array;
 
 public class ShrinkL1Spectrometer {
-  private static final int[] LAYER_NUMS = new int[] { 50 };
-
   public static void main(String[] argv) throws java.io.IOException {
     // Don't pop up Java dock icon just because we're using AWT classes
     System.setProperty("java.awt.headless", "true");
 
-    if (argv.length != 2) {
+    if (argv.length <= 2) {
       System.err.println("1st argument is path to directory of .h5 files");
       System.err.println("2nd argument is directory to put .png files to");
+      System.err.println("3rd-nth arguments are layer numbers (e.g. 50 100)");
       System.exit(1);
     }
     File h5Dir = new File(argv[0]);
     File pngDir = new File(argv[1]);
+    int[] layerNums = new int[argv.length - 2];
+    for (int i = 0; i < layerNums.length; i++) {
+      layerNums[i] = Integer.parseInt(argv[i + 2]);
+    }
 
     File[] h5Files = h5Dir.listFiles();
     if (h5Files == null) {
@@ -45,11 +48,11 @@ public class ShrinkL1Spectrometer {
     }
     for (File h5File : h5Dir.listFiles()) {
       NetcdfFile ncfile = NetcdfFile.open(h5File.getAbsolutePath());
-      handleH5File(ncfile, pngDir);
+      handleH5File(ncfile, pngDir, layerNums);
     }
   }
 
-  private static void handleH5File(NetcdfFile ncfile, File pngDir)
+  private static void handleH5File(NetcdfFile ncfile, File pngDir, int[] layerNums)
       throws java.io.IOException {
     String mapInfo = ncfile.findVariable("map_info").read().toString();
     String[] mapInfoValues = mapInfo.split(",");
@@ -86,7 +89,7 @@ public class ShrinkL1Spectrometer {
     Variable reflectanceVar = ncfile.findVariable("Reflectance");
     int inputWidth = reflectanceVar.getShape()[2];
     int inputHeight = reflectanceVar.getShape()[1];
-    for (int layerNum : LAYER_NUMS) {
+    for (int layerNum : layerNums) {
       Array data;
       try {
         data = reflectanceVar.read(

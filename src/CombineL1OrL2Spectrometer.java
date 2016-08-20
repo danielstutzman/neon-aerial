@@ -23,7 +23,7 @@ public class CombineL1OrL2Spectrometer {
     System.setProperty("java.awt.headless", "true");
 
     if (argv.length != 2) {
-      System.err.println("1st arg should be directory containing *.dat.png files");
+      System.err.println("1st arg should be directory containing *.png files");
       System.err.println("2nd arg should be .png to create");
       System.exit(1);
     }
@@ -39,13 +39,6 @@ public class CombineL1OrL2Spectrometer {
     for (File file : allFiles) {
       if (file.getName().endsWith(".png")) {
         pngFiles.add(file);
-      } else if (file.isDirectory()) { // look for .pngs in directories too
-        System.out.println("Found dir " + file);
-        for (File innerFile : file.listFiles()) {
-          if (innerFile.getName().endsWith(".png")) {
-            pngFiles.add(innerFile);
-          }
-        }
       }
     }
     if (pngFiles.size() == 0) {
