@@ -1,4 +1,4 @@
-.PHONY: copy_offline render_overviews read_hdf5 shrink_l1_spectrometer
+.PHONY: copy_offline render_overviews read_hdf5 shrink_l1_spectrometer combine_l1_spectrometer
 
 VOLUME := /Volumes/AOP_1.3a_w_WF_v1.1a
 #VOLUME := offline
@@ -300,3 +300,9 @@ shrink_l1_spectrometer: build/ShrinkL1Spectrometer.class
 	java -cp build:vendor/netcdf/netcdfAll-4.6.6.jar:vendor/slf4j/slf4j-1.7.21/slf4j-simple-1.7.21.jar ShrinkL1Spectrometer \
 		$(VOLUME)/1.3a/D8/LENO/2015/LENO_L1/LENO_Spectrometer \
 		output/shrink_l1_spectrometer/LENO
+
+combine_l1_spectrometer: build/CombineL2Spectrometer.class
+	mkdir -p output/combine_l1_spectrometer
+	java -cp build CombineL2Spectrometer \
+		output/shrink_l1_spectrometer/LENO \
+		output/combine_l1_spectrometer/LENO.png
