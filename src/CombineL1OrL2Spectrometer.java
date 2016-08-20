@@ -13,9 +13,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
-public class CombineL2Spectrometer {
+public class CombineL1OrL2Spectrometer {
   public static void main(String[] argv) throws java.io.IOException {
-    new CombineL2Spectrometer().mainInstance(argv);
+    new CombineL1OrL2Spectrometer().mainInstance(argv);
   }
 
   public void mainInstance(String[] argv) throws java.io.IOException {
