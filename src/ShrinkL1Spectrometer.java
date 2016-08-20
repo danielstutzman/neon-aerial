@@ -25,23 +25,32 @@ import ucar.nc2.Variable;
 import ucar.ma2.Array;
 
 public class ShrinkL1Spectrometer {
-  private static final int WIDTH = 987;
-  private static final int HEIGHT = 13303;
+  private static final int[] LAYER_NUMS = new int[] { 50 };
 
   public static void main(String[] argv) throws java.io.IOException {
     // Don't pop up Java dock icon just because we're using AWT classes
     System.setProperty("java.awt.headless", "true");
 
     if (argv.length != 2) {
-      System.err.println("1st argument is path to .h5 file to read");
+      System.err.println("1st argument is path to directory of .h5 files");
       System.err.println("2nd argument is directory to put .png files to");
       System.exit(1);
     }
-    File h5File = new File(argv[0]);
+    File h5Dir = new File(argv[0]);
     File pngDir = new File(argv[1]);
 
-    NetcdfFile ncfile = NetcdfFile.open(h5File.getAbsolutePath());
+    File[] h5Files = h5Dir.listFiles();
+    if (h5Files == null) {
+      throw new RuntimeException("listFiles for " + h5Dir + " returned null");
+    }
+    for (File h5File : h5Dir.listFiles()) {
+      NetcdfFile ncfile = NetcdfFile.open(h5File.getAbsolutePath());
+      handleH5File(ncfile, pngDir);
+    }
+  }
 
+  private static void handleH5File(NetcdfFile ncfile, File pngDir)
+      throws java.io.IOException {
     String mapInfo = ncfile.findVariable("map_info").read().toString();
     String[] mapInfoValues = mapInfo.split(",");
     if (!mapInfoValues[0].equals("UTM") ||
@@ -58,27 +67,33 @@ public class ShrinkL1Spectrometer {
     String utmZoneNum = mapInfoValues[7];
     if (!mapInfoValues[8].equals("North") ||
         !mapInfoValues[9].equals("WGS-84") ||
-        !mapInfoValues[10].equals("units=Meters")) {
+        !mapInfoValues[10].trim().equals("units=Meters")) {
       throw new RuntimeException(
-          "Expected North,WGS-84,units=Meters in map_info[8-10]");
+        "Expected North,WGS-84,units=Meters in map_info[8-10] but got '" +
+        mapInfoValues[8] + "," + mapInfoValues[9] + "," + mapInfoValues[10] + "'");
     }
-    if (!mapInfoValues[11].startsWith("rotation=")) {
-      throw new RuntimeException("Expected rotation=... in map_info[11]");
+
+    float rotation;
+    if (mapInfoValues.length >= 12) {
+      if (!mapInfoValues[11].startsWith("rotation=")) {
+        throw new RuntimeException("Expected rotation=... in map_info[11]");
+      }
+      rotation = Float.parseFloat(mapInfoValues[11].split("=")[1]);
+    } else {
+      rotation = 0.0f;
     }
-    float rotation = Float.parseFloat(mapInfoValues[11].split("=")[1]);
 
     Variable reflectanceVar = ncfile.findVariable("Reflectance");
-    for (int layerNum : new int[] { 100, 200, 300, 400 }) {
+    int inputWidth = reflectanceVar.getShape()[2];
+    int inputHeight = reflectanceVar.getShape()[1];
+    for (int layerNum : LAYER_NUMS) {
       Array data;
       try {
         data = reflectanceVar.read(
-          new int[]{layerNum, 0, 0}, new int[] {1, HEIGHT, WIDTH});
+          new int[]{layerNum, 0, 0}, new int[] {1, inputHeight, inputWidth});
       } catch (ucar.ma2.InvalidRangeException e) {
         throw new RuntimeException(e);
       }
-      System.out.println(Arrays.toString(reflectanceVar.getShape()));
-      int inputWidth = reflectanceVar.getShape()[2];
-      int inputHeight = reflectanceVar.getShape()[1];
       short[] shorts = (short[])data.get1DJavaArray(short.class);
 
       short minValue = Short.MAX_VALUE;
@@ -118,17 +133,33 @@ public class ShrinkL1Spectrometer {
       WritableRaster raster = Raster.createWritableRaster(sm, buffer, null);
       BufferedImage image = new BufferedImage(colorModel, raster, false, null);
 
-      File pngFile = new File(pngDir,
-        "W" + WIDTH    + "_" +
-        "H" + HEIGHT   + "_" +
-        "N" + northing + "_" +
-        "E" + easting  + "_" +
-        "R" + rotation + "_" +
-        "L" + layerNum + ".png");
-      ImageIO.write(image, "png", pngFile);
+      int shrunkenWidth = (inputWidth + 9) / 10;
+      int shrunkenHeight = (inputHeight + 9) / 10;
+      byte[] shrunkenBytes = new byte[shrunkenWidth * shrunkenHeight * 2];
+      DataBuffer shrunkenBuffer =
+        new DataBufferByte(shrunkenBytes, shrunkenBytes.length);
+      WritableRaster shrunkenRaster = Raster.createInterleavedRaster(
+        shrunkenBuffer, shrunkenWidth, shrunkenHeight,
+        2 * shrunkenWidth, 2, new int[] {0, 1}, (Point)null);
+      BufferedImage shrunkenImage =
+        new BufferedImage(colorModel, shrunkenRaster, true, null);
+      Graphics2D g = shrunkenImage.createGraphics();
+      AffineTransform transform = AffineTransform.getScaleInstance(0.1, 0.1);
+      g.drawRenderedImage(image, transform);
+
+      File layerDir = new File(pngDir, Integer.toString(layerNum));
+      layerDir.mkdir();
+
+      File pngFile = new File(layerDir,
+        "W" + inputWidth  + "_" +
+        "H" + inputHeight + "_" +
+        "N" + northing    + "_" +
+        "E" + easting     + "_" +
+        "R" + rotation    + ".png");
+      ImageIO.write(shrunkenImage, "png", pngFile);
       System.err.println("Wrote " + pngFile);
     } // next layerNum
 
     ncfile.close();
-  } // end main
+  }
 }
